@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#16A34A</color>
+    <color name="primary_hover">#15803D</color>
+    <color name="bg_dark">#052E16</color>
+    <color name="bg_light">#F4FBF7</color>
+    <color name="green_100">#DCFCE7</color>
+    <color name="green_300">#86EFAC</color>
+    <color name="green_900">#14532D</color>
+    <color name="text_muted">#6B7280</color>
+    <color name="white">#FFFFFF</color>
+    <color name="yellow_star">#FACC15</color>
+</resources>

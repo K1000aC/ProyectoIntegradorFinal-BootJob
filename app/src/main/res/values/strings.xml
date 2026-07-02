@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">BootJob</string>
+    <string name="btn_ingresar">Ingresar</string>
+    <string name="btn_registro">Registro</string>
+    <string name="landing_headline">Consigue el trabajo que mereces.</string>
+    <string name="landing_badge">⚡ Simulador #1 para ingenieros</string>
+    <string name="landing_description">Entrena para entrevistas técnicas y de RRHH con simulaciones inteligentes adaptadas a tu carrera. Feedback en tiempo real.</string>
+    <string name="btn_start_free">Empieza gratis</string>
+    <string name="btn_view_demo">Ver demo</string>
+    <string name="sim_in_progress">&#8226; &#8226; &#8226; Simulación en curso</string>
+    <string name="interviewer_ai">Entrevistador Virtual IA</string>
+    <string name="sim_question">¿Puedes explicarme cómo implementarías un sistema de caché distribuido?</string>
+    <string name="user_label">TÚ</string>
+    <string name="sim_answer">Utilizaría Redis como capa de caché con una estrategia LRU&#8230;</string>
+    <string name="stats_students_count">2,400+</string>
+    <string name="stats_students_label">Alumnos</string>
+    <string name="stats_success_rate">94%</string>
+    <string name="stats_success_label">Éxito</string>
+    <string name="features_title">Funciones clave</string>
+    <string name="emoji_briefcase">💼</string>
+    <string name="feature_interview_title">Simulación de Entrevistas</string>
+    <string name="feature_interview_desc">Practica con preguntas reales según el puesto y recibe feedback instantáneo.</string>
+    <string name="emoji_document">📄</string>
+    <string name="feature_cv_title">Análisis de CV</string>
+    <string name="feature_cv_desc">Sube tu CV en PDF y recibe recomendaciones para destacar.</string>
+    <string name="landing_footer_text">Tu próxima entrevista empieza aquí.</string>
+    <string name="btn_create_account">Crear mi cuenta gratis</string>
+</resources>
