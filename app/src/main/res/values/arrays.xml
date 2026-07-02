@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="careers_array">
+        <item>Selecciona tu carrera</item>
+        <item>Ingeniería en Sistemas Computacionales</item>
+        <item>Ingeniería en Software</item>
+        <item>Ingeniería Civil</item>
+        <item>Ingeniería Industrial</item>
+        <item>Ingeniería Mecatrónica</item>
+        <item>Ingeniería Mecánica</item>
+        <item>Ingeniería Eléctrica</item>
+        <item>Ingeniería Electrónica</item>
+        <item>Ingeniería Química</item>
+        <item>Ingeniería Ambiental</item>
+        <item>Ingeniería Biomédica</item>
+        <item>Ingeniería en Telecomunicaciones</item>
+        <item>Otra ingeniería</item>
+    </string-array>
+</resources>

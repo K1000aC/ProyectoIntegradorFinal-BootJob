@@ -25,4 +25,17 @@
     <string name="feature_cv_desc">Sube tu CV en PDF y recibe recomendaciones para destacar.</string>
     <string name="landing_footer_text">Tu próxima entrevista empieza aquí.</string>
     <string name="btn_create_account">Crear mi cuenta gratis</string>
+    <string name="tab_login">Iniciar sesión</string>
+    <string name="tab_register">Registrarse</string>
+    <string name="hint_nombre">Nombre *</string>
+    <string name="hint_apellido">Apellido *</string>
+    <string name="hint_username">Nombre de usuario *</string>
+    <string name="hint_celular">Celular *</string>
+    <string name="hint_correo">Correo electrónico *</string>
+    <string name="hint_password">Contraseña *</string>
+    <string name="hint_confirm_password">Confirmar contraseña *</string>
+    <string name="label_estado_carrera">Estado de la carrera *</string>
+    <string name="opt_cursando">En curso</string>
+    <string name="opt_egresado">Egresado</string>
+    <string name="btn_olvide_pass">¿Olvidaste tu contraseña?</string>
 </resources>
