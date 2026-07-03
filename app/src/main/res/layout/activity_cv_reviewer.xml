@@ -20,7 +20,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="revisor de cv"
+                android:text="Revisor de cv"
                 android:textColor="@color/green_950"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -62,7 +62,7 @@
                         <ImageView
                             android:layout_width="48dp"
                             android:layout_height="48dp"
-                            android:src="@android:drawable/ic_menu_upload"
+                            android:src="@drawable/ic_upload"
                             app:tint="@color/primary"
                             android:layout_marginBottom="16dp"/>
                         <TextView

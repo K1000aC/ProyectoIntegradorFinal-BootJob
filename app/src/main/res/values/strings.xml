@@ -52,4 +52,6 @@
     <string name="title_add_cv">Sumar a tu CV</string>
     <string name="desc_back">Volver</string>
     <string name="label_career_professional">Carrera profesional *</string>
+    <string name="desc_auth_selection">Selección de autenticación</string>
+    <string name="hint_career">Carrera</string>
 </resources>

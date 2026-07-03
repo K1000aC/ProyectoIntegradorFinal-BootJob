@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.tabs.TabLayout;
@@ -27,12 +27,17 @@ public class AuthActivity extends AppCompatActivity {
 
         // 1. Enlaces con las Vistas del XML
         TabLayout tabLayout = findViewById(R.id.tab_layout_auth);
+        
+        // Add tabs programmatically to avoid XML rendering issues with TabItem
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_login));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_register));
+
         LinearLayout layoutRegisterFields = findViewById(R.id.layout_register_fields);
         TextInputLayout layoutConfirmPassword = findViewById(R.id.layout_confirm_password);
         Button btnForgotPassword = findViewById(R.id.btn_forgot_password);
         Button btnSubmit = findViewById(R.id.btn_submit_auth);
         ProgressBar progressBar = findViewById(R.id.progress_bar_auth);
-        Spinner spinnerCarrera = findViewById(R.id.spinner_carrera);
+        AutoCompleteTextView spinnerCarrera = findViewById(R.id.spinner_carrera);
 
         // 2. Poblar el Spinner de Carreras desde el arrays.xml
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,

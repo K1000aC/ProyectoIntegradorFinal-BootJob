@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_new_sim"
-                    app:icon="@android:drawable/ic_media_play"
+                    app:icon="@drawable/ic_play"
                     app:cornerRadius="12dp"
                     app:backgroundTint="@color/primary" />
             </LinearLayout>
