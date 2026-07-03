@@ -19,7 +19,6 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -30,7 +29,23 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".DashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ForumActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".InterviewSimulatorActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".CvReviewerActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".UserProfileActivity"
             android:exported="false" />
 
     </application>

@@ -10,4 +10,25 @@
     <color name="text_muted">#6B7280</color>
     <color name="white">#FFFFFF</color>
     <color name="yellow_star">#FACC15</color>
+    <color name="green_50">#F0FDF4</color>
+    <color name="green_950">#14532D</color>
+    <color name="emerald_100">#D1FAE5</color>
+    <color name="emerald_700">#047857</color>
+    <color name="teal_100">#CCFBF1</color>
+    <color name="teal_700">#0F766E</color>
+    <color name="yellow_impact">#EAB308</color>
+    <color name="red_100">#FEE2E2</color>
+    <color name="red_700">#B91C1C</color>
+    <color name="orange_100">#FFEDD5</color>
+    <color name="orange_700">#C2410C</color>
+    <color name="yellow_100">#FEF9C3</color>
+    <color name="yellow_700">#A16207</color>
+    <color name="blue_100">#DBEAFE</color>
+    <color name="blue_700">#1D4ED8</color>
+    <color name="interview_bg_green_start">#064e3b</color>
+    <color name="interview_bg_green_end">#166534</color>
+    <color name="interview_bg_yellow_start">#713f12</color>
+    <color name="interview_bg_yellow_end">#92400e</color>
+    <color name="interview_bg_red_start">#7f1d1d</color>
+    <color name="interview_bg_red_end">#9f1239</color>      ```
 </resources>

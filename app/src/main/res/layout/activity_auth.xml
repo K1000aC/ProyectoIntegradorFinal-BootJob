@@ -17,7 +17,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Volver"
+            android:contentDescription="@string/desc_back"
             android:src="@android:drawable/ic_menu_revert"
             app:tint="#1B5E20" />
 
@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
-                android:text="Carrera profesional *"
+                android:text="@string/label_career_professional"
                 android:textColor="#2E7D32"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -217,7 +217,7 @@
             android:layout_height="54dp"
             android:layout_marginTop="24dp"
             android:backgroundTint="#1B5E20"
-            android:text="Iniciar sesión"
+            android:text="@string/btn_login_submit"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             app:cornerRadius="12dp" />

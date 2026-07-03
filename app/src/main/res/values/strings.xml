@@ -38,4 +38,18 @@
     <string name="opt_cursando">En curso</string>
     <string name="opt_egresado">Egresado</string>
     <string name="btn_olvide_pass">¿Olvidaste tu contraseña?</string>
+    <string name="toast_login_success">¡Bienvenido de vuelta!</string>
+    <string name="toast_register_success">¡Cuenta creada exitosamente!</string>
+    <string name="btn_login_submit">Iniciar sesión</string>
+    <string name="btn_register_submit">Crear mi cuenta</string>
+    <string name="dashboard_greeting">¡Hola, Usuario! 👋</string>
+    <string name="dashboard_subtitle">Llevas 7 simulaciones esta semana. ¡Sigue así!</string>
+    <string name="btn_new_sim">Nueva simulación</string>
+    <string name="title_progress">Progreso de simulaciones</string>
+    <string name="title_radar">Mapa de habilidades</string>
+    <string name="title_sessions">Sesiones recientes</string>
+    <string name="title_improve">Habilidades a reforzar</string>
+    <string name="title_add_cv">Sumar a tu CV</string>
+    <string name="desc_back">Volver</string>
+    <string name="label_career_professional">Carrera profesional *</string>
 </resources>

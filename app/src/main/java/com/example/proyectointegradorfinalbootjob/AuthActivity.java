@@ -1,5 +1,6 @@
 package com.example.proyectointegradorfinalbootjob;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -7,12 +8,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.Objects;
 
 public class AuthActivity extends AppCompatActivity {
 
@@ -40,15 +42,14 @@ public class AuthActivity extends AppCompatActivity {
 
         // 3. Recibir el parámetro "TARGET_TAB" desde LandingActivity
         String targetTab = getIntent().getStringExtra("TARGET_TAB");
-        if (targetTab != null && targetTab.equals("register")) {
+        if (Objects.equals(targetTab, "register")) {
             isLogin = false;
             TabLayout.Tab tab = tabLayout.getTabAt(1);
             if (tab != null) tab.select();
-            updateUI(layoutRegisterFields, layoutConfirmPassword, btnForgotPassword, btnSubmit);
         } else {
             isLogin = true;
-            updateUI(layoutRegisterFields, layoutConfirmPassword, btnForgotPassword, btnSubmit);
         }
+        updateUI(layoutRegisterFields, layoutConfirmPassword, btnForgotPassword, btnSubmit);
 
         // 4. Cambiar dinámicamente entre Login y Registro al pulsar las pestañas
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -73,36 +74,38 @@ public class AuthActivity extends AppCompatActivity {
             btnSubmit.setEnabled(false);
             progressBar.setVisibility(View.VISIBLE);
 
-            // Simulamos retraso de red de 1.5 segundos (como en tu setTimeout)
+            // Simulamos retraso de red de 1.5 segundos
             new Handler().postDelayed(() -> {
                 progressBar.setVisibility(View.GONE);
                 btnSubmit.setEnabled(true);
 
                 if (isLogin) {
-                    Toast.makeText(AuthActivity.this, "¡Bienvenido de vuelta!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AuthActivity.this, getString(R.string.toast_login_success), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(AuthActivity.this, "¡Cuenta creada exitosamente!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AuthActivity.this, getString(R.string.toast_register_success), Toast.LENGTH_SHORT).show();
                 }
 
-                // Aquí hay que lanzar el DashboardActivity cuando lo tengamos creado:
-                // startActivity(new Intent(AuthActivity.this, DashboardActivity.class));
-                // finish();
+                // Navegación al Dashboard
+                startActivity(new Intent(AuthActivity.this, DashboardActivity.class));
+                finish();
             }, 1500);
         });
     }
 
-    // Metodo auxiliar para ocultar/mostrar elementos según la pestaña activa
+    /**
+     * Método auxiliar para ocultar/mostrar elementos según la pestaña activa
+     */
     private void updateUI(LinearLayout regFields, TextInputLayout confirmPass, Button forgotPass, Button submitBtn) {
         if (isLogin) {
             regFields.setVisibility(View.GONE);
             confirmPass.setVisibility(View.GONE);
             forgotPass.setVisibility(View.VISIBLE);
-            submitBtn.setText("Iniciar sesión");
+            submitBtn.setText(R.string.btn_login_submit);
         } else {
             regFields.setVisibility(View.VISIBLE);
             confirmPass.setVisibility(View.VISIBLE);
             forgotPass.setVisibility(View.GONE);
-            submitBtn.setText("Crear mi cuenta");
+            submitBtn.setText(R.string.btn_register_submit);
         }
     }
 }
