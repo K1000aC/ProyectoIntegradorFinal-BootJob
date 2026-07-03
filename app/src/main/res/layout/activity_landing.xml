@@ -85,6 +85,7 @@
                     android:textColor="@color/bg_dark"
                     android:textSize="36sp"
                     android:textStyle="bold"
+                    android:fontFamily="@font/fraunces"
                     android:lineSpacingMultiplier="1.1"
                     android:layout_marginBottom="12dp"/>
 

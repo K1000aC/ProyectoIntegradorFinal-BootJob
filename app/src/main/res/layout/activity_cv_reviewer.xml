@@ -24,6 +24,7 @@
                 android:textColor="@color/green_950"
                 android:textSize="24sp"
                 android:textStyle="bold"
+                android:fontFamily="@font/fraunces"
                 android:layout_marginBottom="4dp"/>
 
             <TextView

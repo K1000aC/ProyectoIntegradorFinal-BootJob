@@ -1,9 +1,56 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.ProyectoIntegradorFinalBootJob" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <!-- Tema principal de la aplicación BootJob -->
+    <style name="Theme.BootJob" parent="Theme.Material3.Light.NoActionBar">
+
+        <!-- Colores de marca principales -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/primary_foreground</item>
+
+        <!-- Colores secundarios -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/secondary_foreground</item>
+
+        <!-- Colores de fondo de la aplicación -->
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/card</item>
+        <item name="colorOnSurface">@color/card_foreground</item>
+
+        <!-- Color de la barra de estado superior del celular -->
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Tipografía por defecto para toda la app -->
+        <item name="android:fontFamily">@font/plus_jakarta_sans</item>
+
+        <!-- Enlace a los estilos personalizados de componentes -->
+        <item name="materialButtonStyle">@style/Widget.BootJob.Button</item>
+        <item name="materialCardViewStyle">@style/Widget.BootJob.CardView</item>
+        <item name="textInputStyle">@style/Widget.BootJob.TextInputLayout</item>
     </style>
 
-    <style name="Theme.ProyectoIntegradorFinalBootJob" parent="Base.Theme.ProyectoIntegradorFinalBootJob" />
+    <!-- 1. Estilo global para Botones -->
+    <style name="Widget.BootJob.Button" parent="Widget.Material3.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- 2. Estilo global para Tarjetas (Cards) -->
+    <style name="Widget.BootJob.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">0dp</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="strokeColor">@color/border</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardBackgroundColor">@color/card</item>
+    </style>
+
+    <!-- 3. Estilo global para Inputs de Texto -->
+    <style name="Widget.BootJob.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxBackgroundColor">@color/input_background</item>
+        <item name="boxStrokeColor">@color/border</item>
+    </style>
 </resources>

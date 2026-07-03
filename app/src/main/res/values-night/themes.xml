@@ -1,7 +1,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.ProyectoIntegradorFinalBootJob" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <!-- Tema OSCURO de la aplicación BootJob -->
+    <style name="Theme.BootJob" parent="Theme.Material3.Dark.NoActionBar">
+
+        <!-- Mantenemos el verde característico de la marca -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/primary_foreground</item>
+
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/secondary_foreground</item>
+
+        <!-- Fondos oscuros (Basados en el .dark de tu CSS) -->
+        <item name="android:colorBackground">#121212</item> <!-- Negro suave -->
+        <item name="colorSurface">#1E1E1E</item> <!-- Gris muy oscuro para las tarjetas -->
+        <item name="colorOnSurface">#FFFFFF</item> <!-- Textos en blanco -->
+
+        <!-- Barra de estado del celular en modo oscuro -->
+        <item name="android:statusBarColor">#121212</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Tipografía por defecto -->
+        <item name="android:fontFamily">@font/plus_jakarta_sans</item>
+
+        <!-- Enlazamos los mismos estilos de botones y tarjetas que ya creamos en el archivo normal -->
+        <!-- No necesitamos volver a declararlos, Android los jalará del archivo principal -->
+        <item name="materialButtonStyle">@style/Widget.BootJob.Button</item>
+        <item name="materialCardViewStyle">@style/Widget.BootJob.CardView</item>
+        <item name="textInputStyle">@style/Widget.BootJob.TextInputLayout</item>
     </style>
 </resources>

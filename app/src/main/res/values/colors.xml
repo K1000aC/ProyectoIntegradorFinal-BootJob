@@ -1,34 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#16A34A</color>
-    <color name="primary_hover">#15803D</color>
-    <color name="bg_dark">#052E16</color>
-    <color name="bg_light">#F4FBF7</color>
-    <color name="green_100">#DCFCE7</color>
-    <color name="green_300">#86EFAC</color>
-    <color name="green_900">#14532D</color>
-    <color name="text_muted">#6B7280</color>
-    <color name="white">#FFFFFF</color>
-    <color name="yellow_star">#FACC15</color>
     <color name="green_50">#F0FDF4</color>
-    <color name="green_950">#14532D</color>
-    <color name="emerald_100">#D1FAE5</color>
-    <color name="emerald_700">#047857</color>
-    <color name="teal_100">#CCFBF1</color>
-    <color name="teal_700">#0F766E</color>
-    <color name="yellow_impact">#EAB308</color>
-    <color name="red_100">#FEE2E2</color>
-    <color name="red_700">#B91C1C</color>
-    <color name="orange_100">#FFEDD5</color>
-    <color name="orange_700">#C2410C</color>
-    <color name="yellow_100">#FEF9C3</color>
-    <color name="yellow_700">#A16207</color>
-    <color name="blue_100">#DBEAFE</color>
-    <color name="blue_700">#1D4ED8</color>
-    <color name="interview_bg_green_start">#064e3b</color>
-    <color name="interview_bg_green_end">#166534</color>
-    <color name="interview_bg_yellow_start">#713f12</color>
-    <color name="interview_bg_yellow_end">#92400e</color>
-    <color name="interview_bg_red_start">#7f1d1d</color>
-    <color name="interview_bg_red_end">#9f1239</color>      ```
+    <color name="green_100">#DCFCE7</color>
+    <color name="green_200">#BBF7D0</color>
+    <color name="green_400">#4ADE80</color>
+    <color name="green_500">#22C55E</color>
+    <color name="green_600">#16A34A</color>
+    <color name="green_700">#15803D</color>
+    <color name="green_800">#166534</color>
+    <color name="green_900">#14532D</color>
+    <color name="green_950">#052E16</color>
+
+    <color name="background">#F8FDF9</color>
+    <color name="foreground">#0D2414</color>
+    <color name="card">#FFFFFF</color>
+    <color name="card_foreground">#0D2414</color>
+    <color name="popover">#FFFFFF</color>
+    <color name="popover_foreground">#0D2414</color>
+
+    <color name="primary">#16A34A</color>
+    <color name="primary_foreground">#FFFFFF</color>
+    <color name="secondary">#DCFCE7</color>
+    <color name="secondary_foreground">#14532D</color>
+
+    <color name="muted">#F0FDF4</color>
+    <color name="muted_foreground">#4B7A5D</color>
+    <color name="accent">#4ADE80</color>
+    <color name="accent_foreground">#14532D</color>
+
+    <color name="destructive">#DC2626</color>
+    <color name="destructive_foreground">#FFFFFF</color>
+
+    <color name="border">#2616A34A</color> <color name="input_background">#F0FDF4</color>
+    <color name="switch_background">#BBF7D0</color>
+    <color name="ring">#16A34A</color>
+
+    <color name="semaphore_green">#22C55E</color>
+    <color name="semaphore_yellow">#F59E0B</color>
+    <color name="semaphore_red">#EF4444</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
 </resources>
