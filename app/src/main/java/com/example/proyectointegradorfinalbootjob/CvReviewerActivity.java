@@ -26,6 +26,8 @@ public class CvReviewerActivity extends AppCompatActivity {
 
     private int currentProgress = 0;
     private Handler handler = new Handler(Looper.getMainLooper());
+    private androidx.activity.result.ActivityResultLauncher<String> selectPdfLauncher;
+    private String selectedFileName = "mi_cv.pdf";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +45,35 @@ public class CvReviewerActivity extends AppCompatActivity {
         MaterialCardView btnUpload = findViewById(R.id.btn_upload_cv);
         Button btnReset = findViewById(R.id.btn_reset_analysis);
 
+        // Configurar selector de archivos
+        selectPdfLauncher = registerForActivityResult(
+                new androidx.activity.result.contract.ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        selectedFileName = "cv_seleccionado.pdf";
+                        if ("content".equals(uri.getScheme())) {
+                            try (android.database.Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    int index = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
+                                    if (index != -1) {
+                                        selectedFileName = cursor.getString(index);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else if ("file".equals(uri.getScheme())) {
+                            selectedFileName = new java.io.File(uri.getPath()).getName();
+                        }
+                        startAnalysisSimulation();
+                    } else {
+                        android.widget.Toast.makeText(this, "No se seleccionó ningún archivo", android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
         // Configurar clics
-        btnUpload.setOnClickListener(v -> startAnalysisSimulation());
+        btnUpload.setOnClickListener(v -> selectPdfLauncher.launch("application/pdf"));
         btnReset.setOnClickListener(v -> resetToUploadPhase());
 
         setupBottomNavigation();
@@ -113,7 +142,7 @@ public class CvReviewerActivity extends AppCompatActivity {
 
     private void updateLoadingText(int progress) {
         if (progress < 30) {
-            tvProgressText.setText("Extrayendo contenido...");
+            tvProgressText.setText("Extrayendo contenido de " + selectedFileName + "...");
         } else if (progress < 60) {
             tvProgressText.setText("Verificando compatibilidad ATS...");
         } else {
@@ -124,11 +153,51 @@ public class CvReviewerActivity extends AppCompatActivity {
     private void showResultsPhase() {
         layoutAnalyzing.setVisibility(View.GONE);
         layoutResults.setVisibility(View.VISIBLE);
+
+        // Generar puntaje dinámico entre 62 y 95 basado en el nombre del archivo
+        int finalScore = 62 + (selectedFileName.length() * 3) % 34;
+        setCircularProgress(layoutResults, finalScore);
+        updateResultsText(layoutResults, finalScore);
     }
 
     private void resetToUploadPhase() {
         layoutResults.setVisibility(View.GONE);
         layoutUpload.setVisibility(View.VISIBLE);
         currentProgress = 0;
+    }
+
+    /**
+     * Busca el CircularProgressIndicator en el ViewGroup y establece el progreso.
+     */
+    private void setCircularProgress(android.view.ViewGroup viewGroup, int progress) {
+        if (viewGroup == null) return;
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            android.view.View child = viewGroup.getChildAt(i);
+            if (child instanceof com.google.android.material.progressindicator.CircularProgressIndicator) {
+                ((com.google.android.material.progressindicator.CircularProgressIndicator) child).setProgress(progress);
+                return;
+            } else if (child instanceof android.view.ViewGroup) {
+                setCircularProgress((android.view.ViewGroup) child, progress);
+            }
+        }
+    }
+
+    /**
+     * Busca y actualiza el texto con el porcentaje de compatibilidad de los candidatos.
+     */
+    private void updateResultsText(android.view.ViewGroup viewGroup, int score) {
+        if (viewGroup == null) return;
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            android.view.View child = viewGroup.getChildAt(i);
+            if (child instanceof android.widget.TextView) {
+                String text = ((android.widget.TextView) child).getText().toString();
+                if (text.contains("por encima del")) {
+                    int percent = Math.max(30, score - 10);
+                    ((android.widget.TextView) child).setText("Tu CV está por encima del " + percent + "% de candidatos.");
+                }
+            } else if (child instanceof android.view.ViewGroup) {
+                updateResultsText((android.view.ViewGroup) child, score);
+            }
+        }
     }
 }

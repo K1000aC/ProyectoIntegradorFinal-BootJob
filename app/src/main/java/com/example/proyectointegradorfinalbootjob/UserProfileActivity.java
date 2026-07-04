@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +42,34 @@ public class UserProfileActivity extends AppCompatActivity {
         btnEditProfile = findViewById(R.id.btn_edit_profile);
         btnSaveProfile = findViewById(R.id.btn_save_profile);
 
+        // Cargar datos guardados de SharedPreferences o usar valores predeterminados
+        android.content.SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String nombre = prefs.getString("nombre", "Camila");
+        String apellido = prefs.getString("apellido", "Suárez");
+        String carrera = prefs.getString("carrera", "Ingeniería en Sistemas Computacionales");
+        String bio = prefs.getString("bio", "Estudiante de CUCEI apasionada por el desarrollo de software.");
+        String username = prefs.getString("username", "camila.sc");
+
+        etNombre.setText(nombre);
+        etApellido.setText(apellido);
+        etCarrera.setText(carrera);
+        etBio.setText(bio);
+
+        // Actualizar vistas del encabezado del perfil
+        TextView tvProfileName = findViewById(R.id.tv_profile_name);
+        TextView tvProfileUsername = findViewById(R.id.tv_profile_username);
+        TextView tvProfileInitials = findViewById(R.id.tv_profile_initials);
+
+        if (tvProfileName != null) tvProfileName.setText(nombre + " " + apellido);
+        if (tvProfileUsername != null) tvProfileUsername.setText("@" + username);
+        if (tvProfileInitials != null) {
+            String initials = "";
+            if (!nombre.isEmpty()) initials += nombre.substring(0, 1).toUpperCase();
+            if (!apellido.isEmpty()) initials += apellido.substring(0, 1).toUpperCase();
+            if (initials.isEmpty()) initials = "CS";
+            tvProfileInitials.setText(initials);
+        }
+
         // Configurar Pestañas (Tabs)
         TabLayout tabLayout = findViewById(R.id.tab_layout_profile);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -72,14 +101,45 @@ public class UserProfileActivity extends AppCompatActivity {
         // Lógica del Botón Guardar
         btnSaveProfile.setOnClickListener(v -> {
             toggleEditMode(false);
+
+            String nuevoNombre = etNombre.getText().toString().trim();
+            String nuevoApellido = etApellido.getText().toString().trim();
+            String nuevaCarrera = etCarrera.getText().toString().trim();
+            String nuevaBio = etBio.getText().toString().trim();
+
+            // Guardar en SharedPreferences
+            android.content.SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("nombre", nuevoNombre);
+            editor.putString("apellido", nuevoApellido);
+            editor.putString("carrera", nuevaCarrera);
+            editor.putString("bio", nuevaBio);
+            editor.apply();
+
             Toast.makeText(UserProfileActivity.this, "Cambios guardados correctamente.", Toast.LENGTH_SHORT).show();
+
+            // Simular actualizar los textos superiores en base a los editTexts
+            if (tvProfileName != null) {
+                tvProfileName.setText(nuevoNombre + " " + nuevoApellido);
+            }
+            if (tvProfileInitials != null) {
+                String initials = "";
+                if (!nuevoNombre.isEmpty()) initials += nuevoNombre.substring(0, 1).toUpperCase();
+                if (!nuevoApellido.isEmpty()) initials += nuevoApellido.substring(0, 1).toUpperCase();
+                if (initials.isEmpty()) initials = "CS";
+                tvProfileInitials.setText(initials);
+            }
         });
+
+        bindSecurityAndNotificationButtons();
 
         setupBottomNavigation();
     }
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView == null) {
+            return; // Evita el crash en layouts que no contienen la barra de navegación
+        }
         bottomNavigationView.setSelectedItemId(R.id.nav_profile);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -124,6 +184,33 @@ public class UserProfileActivity extends AppCompatActivity {
         } else {
             btnEditProfile.setVisibility(View.VISIBLE);
             btnSaveProfile.setVisibility(View.GONE);
+        }
+    }
+
+    private void bindSecurityAndNotificationButtons() {
+        // Encontrar y enlazar el botón de actualizar contraseña en layoutSecurity
+        findAndBindButton(layoutSecurity, "Actualizar contraseña", v -> {
+            Toast.makeText(this, "Contraseña actualizada exitosamente.", Toast.LENGTH_SHORT).show();
+        });
+
+        // Encontrar y enlazar el botón de guardar preferencias en layoutNotifications
+        findAndBindButton(layoutNotifications, "Guardar preferencias", v -> {
+            Toast.makeText(this, "Preferencias de notificación guardadas.", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void findAndBindButton(android.view.ViewGroup viewGroup, String buttonText, android.view.View.OnClickListener listener) {
+        if (viewGroup == null) return;
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            android.view.View child = viewGroup.getChildAt(i);
+            if (child instanceof android.widget.Button) {
+                android.widget.Button btn = (android.widget.Button) child;
+                if (buttonText == null || btn.getText().toString().equalsIgnoreCase(buttonText)) {
+                    btn.setOnClickListener(listener);
+                }
+            } else if (child instanceof android.view.ViewGroup) {
+                findAndBindButton((android.view.ViewGroup) child, buttonText, listener);
+            }
         }
     }
 }

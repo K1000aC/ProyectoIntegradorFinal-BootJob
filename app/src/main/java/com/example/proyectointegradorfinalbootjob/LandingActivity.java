@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class LandingActivity extends AppCompatActivity {
 
@@ -18,6 +19,7 @@ public class LandingActivity extends AppCompatActivity {
         MaterialButton btnRegistro = findViewById(R.id.btn_registro);
         MaterialButton btnHeroStart = findViewById(R.id.btn_hero_start);
         MaterialButton btnBottomCTA = findViewById(R.id.btn_bottom_cta);
+        MaterialButton btnHeroDemo = findViewById(R.id.btnHeroDemo);
 
         // CONFIGURACIÓN DE NAVEGACIÓN (Eventos Click con Lambdas)
         // Al pulsar "Ingresar"
@@ -29,6 +31,16 @@ public class LandingActivity extends AppCompatActivity {
         btnRegistro.setOnClickListener(registerListener);
         btnHeroStart.setOnClickListener(registerListener);
         btnBottomCTA.setOnClickListener(registerListener);
+
+        // Al pulsar "Ver Demo"
+        btnHeroDemo.setOnClickListener(v -> {
+            new MaterialAlertDialogBuilder(this)
+                .setTitle("Demo de BootJob")
+                .setMessage("¡Bienvenido a BootJob! Con esta aplicación podrás simular entrevistas de trabajo técnicas, recibir feedback instantáneo de IA para tu currículum (ATS) y compartir tus experiencias en el foro. ¿Deseas crear una cuenta para comenzar?")
+                .setPositiveButton("Registrarse", (dialog, which) -> navigateToAuth("register"))
+                .setNegativeButton("Ver más tarde", null)
+                .show();
+        });
     }
 
     /**

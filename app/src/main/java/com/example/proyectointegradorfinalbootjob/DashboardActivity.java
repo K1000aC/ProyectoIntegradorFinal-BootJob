@@ -38,9 +38,16 @@ public class DashboardActivity extends AppCompatActivity {
         lineChart = findViewById(R.id.lineChart_progress);
         radarChart = findViewById(R.id.radarChart_skills);
 
+        // Obtener el nombre registrado de SharedPreferences
+        android.content.SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String nombre = prefs.getString("nombre", "Usuario");
+
+        // Personalizar el saludo programáticamente sin modificar el XML
+        customizeGreeting((android.view.ViewGroup) findViewById(android.R.id.content), nombre);
+
         // Evento del botón de nueva simulación
         btnNewSimulation.setOnClickListener(v -> {
-            Toast.makeText(this, "Redirigiendo al Simulador...", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(DashboardActivity.this, InterviewSimulatorActivity.class));
         });
 
         // Inicializar y rellenar las gráficas con los datos de Figma
@@ -167,5 +174,25 @@ public class DashboardActivity extends AppCompatActivity {
         radarChart.getLegend().setEnabled(false);
         radarChart.animateXY(1200, 1200);
         radarChart.invalidate();
+    }
+
+    /**
+     * Busca recursivamente el TextView del saludo en el layout y lo personaliza con el nombre del usuario.
+     */
+    private void customizeGreeting(android.view.ViewGroup viewGroup, String name) {
+        if (viewGroup == null) return;
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            android.view.View child = viewGroup.getChildAt(i);
+            if (child instanceof android.widget.TextView) {
+                android.widget.TextView tv = (android.widget.TextView) child;
+                String text = tv.getText().toString();
+                if (text.contains("Hola") || text.contains("Usuario")) {
+                    tv.setText("¡Hola, " + name + "! 👋");
+                    return;
+                }
+            } else if (child instanceof android.view.ViewGroup) {
+                customizeGreeting((android.view.ViewGroup) child, name);
+            }
+        }
     }
 }
