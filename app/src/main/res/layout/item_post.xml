@@ -109,8 +109,9 @@
                 android:text="48 Likes"
                 android:textColor="#6B7280"
                 android:textSize="12sp"
-                app:drawableStartCompat="@android:drawable/btn_star"
-                android:drawablePadding="4dp"/>
+                app:drawableStartCompat="@drawable/ic_thumb_up"
+                app:drawableTint="#6B7280"
+                android:drawablePadding="6dp"/>
 
             <TextView
                 android:id="@+id/tv_comments"
@@ -119,7 +120,10 @@
                 android:text="12 Comentarios"
                 android:textColor="#6B7280"
                 android:textSize="12sp"
-                android:layout_marginStart="16dp"/>
+                android:layout_marginStart="16dp"
+                app:drawableStartCompat="@drawable/ic_forum"
+                app:drawableTint="#6B7280"
+                android:drawablePadding="6dp"/>
         </LinearLayout>
 
     </LinearLayout>

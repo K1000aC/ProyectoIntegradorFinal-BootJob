@@ -15,10 +15,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="mi perfil"
+            android:text="Mi Perfil"
             android:textColor="@color/green_950"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:fontFamily="@font/fraunces"
             android:layout_marginBottom="4dp"/>
 
         <TextView
@@ -38,30 +39,52 @@
             app:strokeWidth="1dp"
             android:layout_marginBottom="24dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:gravity="center_vertical">
+                android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/tv_profile_initials"
+                <FrameLayout
+                    android:id="@+id/layout_profile_photo"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:background="@drawable/bg_circle_green"
-                    android:gravity="center"
-                    android:text="CS"
-                    android:textColor="@color/white"
-                    android:textSize="24sp"
-                    android:textStyle="bold"/>
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true">
+
+                    <TextView
+                        android:id="@+id/tv_profile_initials"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_circle_green"
+                        android:gravity="center"
+                        android:text="CS"
+                        android:textColor="@color/white"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_change_photo"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="bottom|end"
+                        android:padding="0dp"
+                        app:backgroundTint="@color/primary"
+                        app:icon="@drawable/ic_camera"
+                        app:iconSize="16dp"
+                        app:iconPadding="0dp"
+                        android:contentDescription="Cambiar foto de perfil" />
+                </FrameLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:id="@+id/layout_name_info"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_toEndOf="@id/layout_profile_photo"
+                    android:layout_toStartOf="@id/layout_score_info"
                     android:orientation="vertical"
-                    android:layout_marginStart="16dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true">
                     <TextView
                         android:id="@+id/tv_profile_name"
                         android:layout_width="wrap_content"
@@ -80,8 +103,11 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/layout_score_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:orientation="vertical"
                     android:gravity="end">
                     <TextView
@@ -98,7 +124,7 @@
                         android:textColor="#6B7280"
                         android:textSize="12sp"/>
                 </LinearLayout>
-            </LinearLayout>
+            </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.tabs.TabLayout
@@ -106,25 +132,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:background="@color/white"
+            android:background="@android:color/transparent"
             app:tabIndicatorColor="@color/primary"
             app:tabSelectedTextColor="@color/primary"
             app:tabTextColor="#6B7280"
-            app:tabMode="fixed">
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Personal"/>
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Seguridad"/>
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Avisos"/>
-        </com.google.android.material.tabs.TabLayout>
+            app:tabMode="fixed" />
 
         <LinearLayout
             android:id="@+id/layout_tab_personal"
@@ -139,58 +151,110 @@
                 android:orientation="horizontal"
                 android:gravity="end"
                 android:layout_marginBottom="12dp">
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_edit_profile"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Editar"
                     android:textColor="@color/primary"/>
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/et_nombre"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nombre"
-                android:text="Camila"
-                android:enabled="false"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_nombre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Camila"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/et_apellido"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Apellido"
-                android:text="Suárez"
-                android:enabled="false"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_apellido"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Suárez"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/et_carrera"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Correo electrónico"
+                app:startIconDrawable="@drawable/ic_mail"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="camila.suarez@example.com"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Celular"
+                app:startIconDrawable="@drawable/ic_phone"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="+52 33 1234 5678"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Carrera Profesional"
-                android:text="Ingeniería en Sistemas Computacionales"
-                android:enabled="false"
-                android:layout_marginBottom="12dp"/>
+                app:startIconDrawable="@drawable/ic_school"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_carrera"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ingeniería en Sistemas Computacionales"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/et_bio"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Bio breve"
-                android:text="Estudiante de CUCEI apasionada por el desarrollo de software."
-                android:enabled="false"
-                android:lines="3"
-                android:gravity="top|start"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_bio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Estudiante de CUCEI apasionada por el desarrollo de software."
+                    android:enabled="false"
+                    android:lines="3"
+                    android:gravity="top|start"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_save_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Guardar Cambios"
+                app:icon="@drawable/ic_save"
                 app:cornerRadius="12dp"
                 android:visibility="gone"/>
         </LinearLayout>
@@ -211,7 +275,7 @@
                 android:layout_marginBottom="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Contraseña actual"
@@ -224,7 +288,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nueva contraseña"
@@ -240,7 +304,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Actualizar contraseña"
-                app:cornerRadius="12dp"/>
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_recovery_link"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enviar enlace de recuperación"
+                app:icon="@drawable/ic_mail"
+                android:textColor="@color/primary"/>
         </LinearLayout>
 
         <LinearLayout

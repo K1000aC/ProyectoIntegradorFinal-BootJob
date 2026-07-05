@@ -72,6 +72,12 @@ public class UserProfileActivity extends AppCompatActivity {
 
         // Configurar Pestañas (Tabs)
         TabLayout tabLayout = findViewById(R.id.tab_layout_profile);
+        
+        // Add tabs programmatically with icons
+        tabLayout.addTab(tabLayout.newTab().setText("Personal").setIcon(R.drawable.ic_profile));
+        tabLayout.addTab(tabLayout.newTab().setText("Seguridad").setIcon(R.drawable.ic_shield));
+        tabLayout.addTab(tabLayout.newTab().setText("Avisos").setIcon(R.drawable.ic_bell));
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

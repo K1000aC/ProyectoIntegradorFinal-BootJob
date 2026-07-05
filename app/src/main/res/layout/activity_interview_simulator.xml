@@ -27,7 +27,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="nueva simulación"
+                    android:text="Nueva Simulación"
                     android:textColor="@color/green_950"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -47,6 +47,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Empresa objetivo"
+                    app:startIconDrawable="@drawable/ic_building"
                     android:layout_marginBottom="16dp">
                     <AutoCompleteTextView
                         android:id="@+id/spinner_company"
@@ -60,6 +61,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Puesto al que aplicas *"
+                    app:startIconDrawable="@drawable/ic_briefcase"
                     android:layout_marginBottom="24dp">
                     <AutoCompleteTextView
                         android:id="@+id/spinner_role"
@@ -102,7 +104,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:text="Iniciar simulación"
-                    app:icon="@android:drawable/ic_media_play"
+                    app:icon="@drawable/ic_play"
                     app:iconGravity="textStart"
                     app:cornerRadius="12dp"
                     android:enabled="false"/> </LinearLayout>
@@ -218,13 +220,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="end">
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+
+                <!-- Botones de controles -->
+                <ImageButton
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_mic_off"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/white"
+                    android:contentDescription="Mute mic" />
+
+                <ImageButton
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_video"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/white"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="Toggle video" />
+
+                <ImageButton
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_lightbulb"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/white"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="Get hint" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_send_answer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Enviar"
+                    app:icon="@drawable/ic_send"
                     app:backgroundTint="@color/white"
                     android:textColor="@color/green_950"
                     app:cornerRadius="12dp"/>

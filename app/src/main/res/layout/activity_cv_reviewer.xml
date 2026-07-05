@@ -64,7 +64,8 @@
                             android:layout_height="48dp"
                             android:src="@drawable/ic_upload"
                             app:tint="@color/primary"
-                            android:layout_marginBottom="16dp"/>
+                            android:layout_marginBottom="16dp"
+                            android:contentDescription="Icono subir CV" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -89,8 +90,15 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:visibility="gone"
-                android:padding="32dp"
-                android:background="@drawable/bg_rounded_white">
+                android:padding="32dp">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_cv"
+                    app:tint="@color/primary"
+                    android:layout_marginBottom="24dp"
+                    android:contentDescription="Icono Analizando CV" />
 
                 <ProgressBar
                     android:id="@+id/progress_analysis"
@@ -162,12 +170,47 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Fortalezas -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="16dp"
                     app:strokeColor="@color/green_100"
-                    app:strokeWidth="1dp">
+                    app:strokeWidth="1dp"
+                    android:layout_marginBottom="16dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Fortalezas detectadas"
+                            android:textStyle="bold"
+                            android:textColor="@color/green_950"
+                            android:layout_marginBottom="12dp"
+                            app:drawableStartCompat="@drawable/ic_award"
+                            android:drawablePadding="8dp"
+                            app:drawableTint="@color/primary"/>
+                        <!-- Item de fortaleza -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Experiencia técnica sólida en Java."
+                            android:textColor="@color/green_800"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Áreas de mejora -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="@color/green_100"
+                    app:strokeWidth="1dp"
+                    android:layout_marginBottom="16dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -179,15 +222,17 @@
                             android:text="Áreas de mejora"
                             android:textStyle="bold"
                             android:textColor="@color/green_950"
-                            android:layout_marginBottom="12dp"/>
+                            android:layout_marginBottom="12dp"
+                            app:drawableStartCompat="@drawable/ic_warning"
+                            android:drawablePadding="8dp"
+                            app:drawableTint="@color/semaphore_red"/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:background="@color/red_100"
-                            android:padding="12dp"
-                            android:layout_marginBottom="8dp">
+                            android:padding="12dp">
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -204,13 +249,47 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <!-- Habilidades para añadir -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="@color/green_100"
+                    app:strokeWidth="1dp"
+                    android:layout_marginBottom="16dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Habilidades para añadir"
+                            android:textStyle="bold"
+                            android:textColor="@color/green_950"
+                            android:layout_marginBottom="12dp"
+                            app:drawableStartCompat="@drawable/ic_star"
+                            android:drawablePadding="8dp"
+                            app:drawableTint="@color/semaphore_yellow"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Docker, Kubernetes, AWS Cloud practitioner"
+                            android:textColor="@color/green_800"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_reset_analysis"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Nuevo análisis"
-                    android:layout_marginTop="16dp"
+                    app:icon="@drawable/ic_refresh"
+                    android:layout_marginTop="8dp"
                     android:textColor="@color/primary"/>
             </LinearLayout>
         </LinearLayout>
