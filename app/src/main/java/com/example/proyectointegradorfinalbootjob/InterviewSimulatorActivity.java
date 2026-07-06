@@ -126,6 +126,7 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
     }
 
     private void loadQuestionData() {
+        layoutPhaseInterview.setBackgroundColor(android.graphics.Color.parseColor("#FAFAFA"));
         tvAiCategory.setText("ENTREVISTADOR · " + categories[currentQuestionIndex].toUpperCase());
         tvAiQuestion.setText(questions[currentQuestionIndex]);
         tvCounter.setText((currentQuestionIndex + 1) + "/" + questions.length);
@@ -143,6 +144,15 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
 
         int score = (answer.length() < 15) ? 45 : 75 + (int)(Math.random() * 20);
         totalScore += score;
+
+        // Semáforo de fondo
+        if (score >= 85) {
+            layoutPhaseInterview.setBackgroundColor(android.graphics.Color.parseColor("#DCFCE7")); // Verde
+        } else if (score >= 60) {
+            layoutPhaseInterview.setBackgroundColor(android.graphics.Color.parseColor("#FEF9C3")); // Amarillo
+        } else {
+            layoutPhaseInterview.setBackgroundColor(android.graphics.Color.parseColor("#FEE2E2")); // Rojo
+        }
 
         tvFeedbackTitle.setText("Puntuación: " + score + "/100");
         tvFeedbackMessage.setText(score >= 70 ? "Excelente respuesta técnica." : "Podrías profundizar más en los detalles.");

@@ -2,7 +2,11 @@ package com.example.proyectointegradorfinalbootjob;
 
 import android.os.Bundle;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,14 +15,23 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class ForumActivity extends AppCompatActivity {
 
     private RecyclerView recyclerForum;
     private PostAdapter postAdapter;
-    private List<Post> postList;
+    private List<Post> postList = new ArrayList<>();
+    private ProgressBar progressBar;
 
     private String currentSearchQuery = "";
     private String currentSelectedTag = "Todos";
@@ -28,197 +41,161 @@ public class ForumActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum);
 
-        // Enlazar vistas
         recyclerForum = findViewById(R.id.recycler_forum);
         ChipGroup chipGroupTags = findViewById(R.id.chip_group_tags);
         ExtendedFloatingActionButton fabNewPost = findViewById(R.id.fab_new_post);
         android.widget.EditText etSearchForum = findViewById(R.id.et_search_forum);
+        progressBar = new ProgressBar(this); // O buscarlo en el XML si existe
 
-        // Configurar RecyclerView
         recyclerForum.setLayoutManager(new LinearLayoutManager(this));
-        loadInitialPosts();
-        postAdapter = new PostAdapter(new ArrayList<>(postList));
+        postAdapter = new PostAdapter(new ArrayList<>());
         recyclerForum.setAdapter(postAdapter);
 
-        // Configurar búsqueda dinámica
+        loadForumData();
+
         if (etSearchForum != null) {
             etSearchForum.addTextChangedListener(new android.text.TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                     currentSearchQuery = s.toString().toLowerCase().trim();
                     filterPosts();
                 }
-
-                @Override
-                public void afterTextChanged(android.text.Editable s) {}
+                @Override public void afterTextChanged(android.text.Editable s) {}
             });
         }
 
-        // Cargar Chips de categorías
         String[] tags = {"Todos", "algoritmos", "HR", "backend", "técnica", "manufactura"};
         for (String tag : tags) {
             Chip chip = new Chip(this);
             chip.setText(tag);
             chip.setCheckable(true);
             if (tag.equals("Todos")) chip.setChecked(true);
-
-            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    currentSelectedTag = tag;
-                    filterPosts();
-                }
-            });
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> { if (isChecked) { currentSelectedTag = tag; filterPosts(); } });
             chipGroupTags.addView(chip);
         }
 
-        // Clic en compartir experiencia (Diálogo personalizado programático)
-        fabNewPost.setOnClickListener(v -> {
-            android.widget.LinearLayout dialogLayout = new android.widget.LinearLayout(this);
-            dialogLayout.setOrientation(android.widget.LinearLayout.VERTICAL);
-            dialogLayout.setPadding(48, 24, 48, 24);
-
-            android.widget.EditText edtAuthor = new android.widget.EditText(this);
-            edtAuthor.setHint("Tu Nombre (ej: Juan Pérez)");
-            edtAuthor.setSingleLine(true);
-            dialogLayout.addView(edtAuthor);
-
-            android.widget.EditText edtCompany = new android.widget.EditText(this);
-            edtCompany.setHint("Empresa (ej: Google)");
-            edtCompany.setSingleLine(true);
-            dialogLayout.addView(edtCompany);
-
-            android.widget.EditText edtRole = new android.widget.EditText(this);
-            edtRole.setHint("Puesto (ej: Backend Developer)");
-            edtRole.setSingleLine(true);
-            dialogLayout.addView(edtRole);
-
-            android.widget.EditText edtTitle = new android.widget.EditText(this);
-            edtTitle.setHint("Título del relato");
-            edtTitle.setSingleLine(true);
-            dialogLayout.addView(edtTitle);
-
-            android.widget.EditText edtContent = new android.widget.EditText(this);
-            edtContent.setHint("Cuéntanos tu experiencia...");
-            edtContent.setLines(4);
-            dialogLayout.addView(edtContent);
-
-            // Márgenes para los inputs
-            for (int i = 0; i < dialogLayout.getChildCount(); i++) {
-                android.view.View child = dialogLayout.getChildAt(i);
-                android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
-                        android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                        android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                lp.setMargins(0, 0, 0, 24);
-                child.setLayoutParams(lp);
-            }
-
-            new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("Compartir Experiencia")
-                .setView(dialogLayout)
-                .setPositiveButton("Publicar", (dialog, which) -> {
-                    String author = edtAuthor.getText().toString().trim();
-                    String company = edtCompany.getText().toString().trim();
-                    String role = edtRole.getText().toString().trim();
-                    String title = edtTitle.getText().toString().trim();
-                    String content = edtContent.getText().toString().trim();
-
-                    if (author.isEmpty() || company.isEmpty() || role.isEmpty() || title.isEmpty() || content.isEmpty()) {
-                        Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    String initials = "";
-                    String[] parts = author.split(" ");
-                    if (parts.length > 0 && !parts[0].isEmpty()) initials += parts[0].substring(0, 1).toUpperCase();
-                    if (parts.length > 1 && !parts[1].isEmpty()) initials += parts[1].substring(0, 1).toUpperCase();
-                    if (initials.isEmpty()) initials = "U";
-
-                    Post newPost = new Post(
-                        postList.size() + 1,
-                        author,
-                        initials,
-                        "Estudiante · Reciente",
-                        company,
-                        role,
-                        "Hace un momento",
-                        title,
-                        content,
-                        0,
-                        0
-                    );
-
-                    postList.add(0, newPost);
-                    filterPosts();
-                    Toast.makeText(this, "¡Experiencia publicada con éxito!", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
-        });
+        fabNewPost.setOnClickListener(v -> showNewPostDialog());
 
         setupBottomNavigation();
     }
 
-    private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_forum);
+    private void loadForumData() {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = prefs.getString("token", "");
 
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.nav_dashboard) {
-                startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
-            } else if (itemId == R.id.nav_simulator) {
-                startActivity(new Intent(getApplicationContext(), InterviewSimulatorActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
-            } else if (itemId == R.id.nav_cv) {
-                startActivity(new Intent(getApplicationContext(), CvReviewerActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
-            } else if (itemId == R.id.nav_forum) {
-                return true;
-            } else if (itemId == R.id.nav_profile) {
-                startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
+        SupabaseManager.getForumPosts(token, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                runOnUiThread(() -> Toast.makeText(ForumActivity.this, "Error al cargar foro", Toast.LENGTH_SHORT).show());
             }
-            return false;
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String body = response.body() != null ? response.body().string() : "[]";
+                runOnUiThread(() -> {
+                    try {
+                        JSONArray array = new JSONArray(body);
+                        postList.clear();
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject obj = array.getJSONObject(i);
+                            postList.add(new Post(
+                                    obj.optInt("id", 0),
+                                    obj.optString("author", "Usuario"),
+                                    "U",
+                                    "Estudiante",
+                                    obj.optString("company", ""),
+                                    obj.optString("role", ""),
+                                    "Reciente",
+                                    obj.optString("title", ""),
+                                    obj.optString("content", ""),
+                                    0, 0
+                            ));
+                        }
+                        filterPosts();
+                    } catch (Exception e) { e.printStackTrace(); }
+                });
+            }
         });
     }
 
-    private void loadInitialPosts() {
-        postList = new ArrayList<>();
-        postList.add(new Post(1, "Carlos Mendoza", "CM", "Ing. Sistemas — TEC", "Google", "Software Engineer II", "Hace 2 horas", "Entrevista en Google — 5 rondas, logré la oferta 🎉", "Quiero compartir mi experiencia completa con Google LATAM para SWE II. El proceso fue 5 rondas de 45 min cada una...", 48, 12));
-        postList.add(new Post(2, "Valeria Ríos", "VR", "Ing. Mecatrónica — UNAM", "Bimbo", "Ing. de Manufactura", "Hace 1 día", "Proceso de Bimbo para Manufactura", "El proceso en Bimbo fue: 1) Entrevista HR por Teams (30 min, preguntas de valores y motivación), 2) Caso de negocio...", 33, 8));
-        postList.add(new Post(3, "Diego Fuentes", "DF", "Ing. en Software — UANL", "Clip", "Backend Developer", "Hace 3 días", "Clip — entrevista técnica enfocada en APIs", "Proceso rápido: screening de 20 min con recruiter, prueba técnica de 90 min (diseñar e implementar una API REST)...", 27, 5));
+    private void showNewPostDialog() {
+        android.widget.LinearLayout dialogLayout = new android.widget.LinearLayout(this);
+        dialogLayout.setOrientation(android.widget.LinearLayout.VERTICAL);
+        dialogLayout.setPadding(48, 24, 48, 24);
+
+        android.widget.EditText edtTitle = new android.widget.EditText(this);
+        edtTitle.setHint("Título");
+        dialogLayout.addView(edtTitle);
+
+        android.widget.EditText edtCompany = new android.widget.EditText(this);
+        edtCompany.setHint("Empresa");
+        dialogLayout.addView(edtCompany);
+
+        android.widget.EditText edtRole = new android.widget.EditText(this);
+        edtRole.setHint("Puesto");
+        dialogLayout.addView(edtRole);
+
+        android.widget.EditText edtContent = new android.widget.EditText(this);
+        edtContent.setHint("Tu experiencia...");
+        edtContent.setLines(4);
+        dialogLayout.addView(edtContent);
+
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle("Publicar Experiencia")
+            .setView(dialogLayout)
+            .setPositiveButton("Publicar", (dialog, which) -> {
+                savePost(edtTitle.getText().toString(), edtCompany.getText().toString(), edtRole.getText().toString(), edtContent.getText().toString());
+            })
+            .setNegativeButton("Cancelar", null)
+            .show();
+    }
+
+    private void savePost(String title, String company, String role, String content) {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String userId = prefs.getString("userId", "");
+        String author = prefs.getString("nombre", "Usuario") + " " + prefs.getString("apellido", "");
+        String token = prefs.getString("token", "");
+
+        SupabaseManager.saveForumPost(userId, author, company, role, title, content, token, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                runOnUiThread(() -> Toast.makeText(ForumActivity.this, "Error de red", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(ForumActivity.this, "Publicado", Toast.LENGTH_SHORT).show();
+                        loadForumData();
+                    }
+                });
+            }
+        });
     }
 
     private void filterPosts() {
         List<Post> filteredList = new ArrayList<>();
         for (Post post : postList) {
-            boolean matchesSearch = currentSearchQuery.isEmpty() ||
-                    post.author.toLowerCase().contains(currentSearchQuery) ||
-                    post.company.toLowerCase().contains(currentSearchQuery) ||
-                    post.role.toLowerCase().contains(currentSearchQuery) ||
-                    post.title.toLowerCase().contains(currentSearchQuery) ||
-                    post.content.toLowerCase().contains(currentSearchQuery);
-
-            boolean matchesTag = currentSelectedTag.equalsIgnoreCase("Todos") ||
-                    post.company.toLowerCase().contains(currentSelectedTag.toLowerCase()) ||
-                    post.role.toLowerCase().contains(currentSelectedTag.toLowerCase()) ||
-                    post.title.toLowerCase().contains(currentSelectedTag.toLowerCase()) ||
-                    post.content.toLowerCase().contains(currentSelectedTag.toLowerCase());
-
-            if (matchesSearch && matchesTag) {
-                filteredList.add(post);
-            }
+            boolean matchesSearch = currentSearchQuery.isEmpty() || post.title.toLowerCase().contains(currentSearchQuery) || post.content.toLowerCase().contains(currentSearchQuery);
+            boolean matchesTag = currentSelectedTag.equalsIgnoreCase("Todos") || post.company.toLowerCase().contains(currentSelectedTag.toLowerCase());
+            if (matchesSearch && matchesTag) filteredList.add(post);
         }
         postAdapter.updateList(filteredList);
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_forum);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_dashboard) startActivity(new Intent(this, DashboardActivity.class));
+            else if (itemId == R.id.nav_simulator) startActivity(new Intent(this, InterviewSimulatorActivity.class));
+            else if (itemId == R.id.nav_cv) startActivity(new Intent(this, CvReviewerActivity.class));
+            else if (itemId == R.id.nav_profile) startActivity(new Intent(this, UserProfileActivity.class));
+            else if (itemId == R.id.nav_forum) return true;
+            overridePendingTransition(0, 0);
+            return true;
+        });
     }
 }

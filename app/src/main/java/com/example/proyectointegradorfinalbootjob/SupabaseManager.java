@@ -105,30 +105,41 @@ public class SupabaseManager {
     }
 
     /**
-     * Actualiza los datos de un usuario en Supabase metadata.
+     * Guarda una experiencia en el foro.
      */
-    public static void updateUser(String userId, String nombre, String apellido, String username, String celular, String carrera, String token, Callback callback) {
+    public static void saveForumPost(String userId, String author, String company, String role, String title, String content, String token, Callback callback) {
         try {
             JSONObject jsonBody = new JSONObject();
-            JSONObject userData = new JSONObject();
-            userData.put("nombre", nombre);
-            userData.put("apellido", apellido);
-            userData.put("username", username);
-            userData.put("celular", celular);
-            userData.put("carrera", carrera);
-            jsonBody.put("data", userData);
+            jsonBody.put("user_id", userId);
+            jsonBody.put("author", author);
+            jsonBody.put("company", company);
+            jsonBody.put("role", role);
+            jsonBody.put("title", title);
+            jsonBody.put("content", content);
 
             RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
             Request request = new Request.Builder()
-                    .url(SUPABASE_URL + "/auth/v1/user")
+                    .url(SUPABASE_URL + "/rest/v1/foro")
                     .addHeader("apikey", SUPABASE_KEY)
                     .addHeader("Authorization", "Bearer " + token)
                     .addHeader("Content-Type", "application/json")
-                    .put(body)
+                    .addHeader("Prefer", "return=representation")
+                    .post(body)
                     .build();
             client.newCall(request).enqueue(callback);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    /**
+     * Obtiene las experiencias del foro.
+     */
+    public static void getForumPosts(String token, Callback callback) {
+        Request request = new Request.Builder()
+                .url(SUPABASE_URL + "/rest/v1/foro?select=*&order=created_at.desc")
+                .addHeader("apikey", SUPABASE_KEY)
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+        client.newCall(request).enqueue(callback);
     }
 }
