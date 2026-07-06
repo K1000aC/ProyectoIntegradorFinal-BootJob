@@ -52,7 +52,13 @@ public class UserProfileActivity extends AppCompatActivity {
         tvNombre = findViewById(R.id.tv_profile_name);
         tvUsername = findViewById(R.id.tv_profile_username);
         tvInitials = findViewById(R.id.tv_profile_initials);
-        btnLogout = findViewById(R.id.btn_logout);
+        btnLogout.setOnClickListener(v -> {
+            prefs.edit().clear().apply();
+            Intent intent = new Intent(UserProfileActivity.this, LandingActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
         btnEditProfile = findViewById(R.id.btn_edit_profile);
 
         prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);

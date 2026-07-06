@@ -226,30 +226,33 @@
 
                 <!-- Botones de controles -->
                 <ImageButton
+                    android:id="@+id/btn_voice"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/ic_mic_off"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:tint="@color/white"
-                    android:contentDescription="Mute mic" />
+                    android:contentDescription="Voz" />
 
                 <ImageButton
+                    android:id="@+id/btn_camera"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/ic_video"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:tint="@color/white"
                     android:layout_marginStart="8dp"
-                    android:contentDescription="Toggle video" />
+                    android:contentDescription="Cámara" />
 
                 <ImageButton
+                    android:id="@+id/btn_idea"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/ic_lightbulb"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:tint="@color/white"
                     android:layout_marginStart="8dp"
-                    android:contentDescription="Get hint" />
+                    android:contentDescription="Idea" />
 
                 <View
                     android:layout_width="0dp"
@@ -261,6 +264,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Enviar"
+                    android:gravity="center"
                     app:icon="@drawable/ic_send"
                     app:backgroundTint="@color/white"
                     android:textColor="@color/green_950"

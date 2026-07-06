@@ -19,7 +19,7 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingHorizontal="16dp"
-            android:paddingTop="60dp"
+            android:paddingTop="20dp"
             android:paddingBottom="8dp">
 
             <TextView

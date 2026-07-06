@@ -64,41 +64,26 @@ public class DashboardActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String userId = prefs.getString("userId", "");
+        String token = prefs.getString("token", "");
         String nombre = prefs.getString("nombre", "Usuario");
 
         tvGreeting.setText("¡Hola, " + nombre + "! 👋");
-
         btnNewSimulation.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, InterviewSimulatorActivity.class)));
 
         if (!userId.isEmpty()) {
-            loadUserStats(userId);
+            loadUserStats(userId, token);
+            fetchHabilidades(userId, token);
         } else {
             showEmptyState();
         }
-
         setupBottomNavigation();
     }
 
-    private void loadUserStats(String userId) {
+    private void loadUserStats(String userId, String token) {
         progressBar.setVisibility(View.VISIBLE);
-        layoutContent.setVisibility(View.GONE);
-        layoutEmptyState.setVisibility(View.GONE);
-
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        String token = prefs.getString("token", "");
-
         SupabaseManager.getStatistics(userId, token, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(DashboardActivity.this, "Error de red", Toast.LENGTH_SHORT).show();
-                    showEmptyState();
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            @Override public void onFailure(Call call, IOException e) { runOnUiThread(() -> { progressBar.setVisibility(View.GONE); showEmptyState(); }); }
+            @Override public void onResponse(Call call, Response response) throws IOException {
                 String body = response.body() != null ? response.body().string() : "[]";
                 runOnUiThread(() -> {
                     progressBar.setVisibility(View.GONE);
@@ -108,35 +93,60 @@ public class DashboardActivity extends AppCompatActivity {
                             layoutContent.setVisibility(View.VISIBLE);
                             updateStats(jsonArray);
                             setupLineChart(jsonArray);
-                            setupRadarChart(jsonArray);
-                        } else {
-                            showEmptyState();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        showEmptyState();
-                    }
+                        } else { showEmptyState(); }
+                    } catch (Exception e) { showEmptyState(); }
                 });
             }
         });
     }
 
-    private void showEmptyState() {
-        layoutContent.setVisibility(View.GONE);
-        layoutEmptyState.setVisibility(View.VISIBLE);
+    private void fetchHabilidades(String userId, String token) {
+        SupabaseManager.getHabilidades(userId, token, new Callback() {
+            @Override public void onFailure(Call call, IOException e) {}
+            @Override public void onResponse(Call call, Response response) throws IOException {
+                String body = response.body() != null ? response.body().string() : "[]";
+                runOnUiThread(() -> {
+                    try {
+                        JSONArray arr = new JSONArray(body);
+                        if (arr.length() > 0) {
+                            JSONObject obj = arr.getJSONObject(0);
+                            updateRadarChart(obj.optInt("algoritmos"), obj.optInt("bd"), obj.optInt("arquitectura"),
+                                    obj.optInt("soft_skills"), obj.optInt("poo"), 0);
+                        }
+                    } catch (Exception e) { e.printStackTrace(); }
+                });
+            }
+        });
     }
+
+    private void updateRadarChart(int alg, int bd, int arq, int soft, int poo, int red) {
+        List<RadarEntry> entries = new ArrayList<>();
+        entries.add(new RadarEntry(alg)); entries.add(new RadarEntry(bd));
+        entries.add(new RadarEntry(arq)); entries.add(new RadarEntry(soft));
+        entries.add(new RadarEntry(poo)); entries.add(new RadarEntry(red));
+
+        RadarDataSet dataSet = new RadarDataSet(entries, "Habilidades");
+        dataSet.setColor(Color.parseColor("#16A34A"));
+        dataSet.setFillColor(Color.parseColor("#16A34A"));
+        dataSet.setDrawFilled(true);
+        dataSet.setFillAlpha(100);
+
+        radarChart.setData(new RadarData(dataSet));
+        radarChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(new String[]{"Alg", "BD", "Arq", "Soft", "POO", "Red"}));
+        radarChart.invalidate();
+    }
+
+    private void showEmptyState() { layoutContent.setVisibility(View.GONE); layoutEmptyState.setVisibility(View.VISIBLE); }
 
     private void updateStats(JSONArray data) throws Exception {
         int count = data.length();
         int totalScore = 0;
         int bestScore = 0;
-        // Asumiendo que cada simulación dura aprox 5 min para el ejemplo, o podrías guardarlo en DB
         for (int i = 0; i < count; i++) {
             int score = data.getJSONObject(i).optInt("score", 0);
             totalScore += score;
             if (score > bestScore) bestScore = score;
         }
-
         tvSimulations.setText(String.valueOf(count));
         tvAvgScore.setText(String.valueOf(count > 0 ? totalScore / count : 0));
         tvBestScore.setText(String.valueOf(bestScore));
@@ -149,80 +159,23 @@ public class DashboardActivity extends AppCompatActivity {
             float score = (float) data.getJSONObject(i).optDouble("score", 0);
             lineEntries.add(new Entry(i, score));
         }
-
         LineDataSet lineDataSet = new LineDataSet(lineEntries, "Score");
         lineDataSet.setColor(Color.parseColor("#16A34A"));
         lineDataSet.setCircleColor(Color.parseColor("#16A34A"));
         lineDataSet.setLineWidth(3f);
-        lineDataSet.setDrawCircleHole(false);
-        lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-
         lineChart.setData(new LineData(lineDataSet));
-        lineChart.getDescription().setEnabled(false);
-        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        lineChart.getAxisRight().setEnabled(false);
         lineChart.invalidate();
     }
 
-    private void setupRadarChart(JSONArray data) {
-        List<RadarEntry> radarEntries = new ArrayList<>();
-        // En una app real, estos valores vendrían de un análisis de las respuestas del usuario
-        radarEntries.add(new RadarEntry(80f)); // Algoritmos
-        radarEntries.add(new RadarEntry(75f)); // Bases de Datos
-        radarEntries.add(new RadarEntry(85f)); // Sistemas
-        radarEntries.add(new RadarEntry(70f)); // Soft Skills
-        radarEntries.add(new RadarEntry(65f)); // POO
-        radarEntries.add(new RadarEntry(78f)); // Redes
-
-        RadarDataSet radarDataSet = new RadarDataSet(radarEntries, "Habilidades");
-        radarDataSet.setColor(Color.parseColor("#16A34A"));
-        radarDataSet.setFillColor(Color.parseColor("#16A34A"));
-        radarDataSet.setDrawFilled(true);
-        radarDataSet.setFillAlpha(100);
-        radarDataSet.setLineWidth(2f);
-        radarDataSet.setDrawHighlightCircleEnabled(true);
-        radarDataSet.setDrawHighlightIndicators(false);
-
-        RadarData radarData = new RadarData(radarDataSet);
-        radarData.setValueTextSize(8f);
-        radarData.setDrawValues(false);
-        
-        radarChart.setData(radarData);
-        radarChart.getDescription().setEnabled(false);
-        radarChart.setWebLineWidth(1f);
-        radarChart.setWebColor(Color.LTGRAY);
-        radarChart.setWebLineWidthInner(1f);
-        radarChart.setWebColorInner(Color.LTGRAY);
-        radarChart.setWebAlpha(100);
-
-        XAxis xAxis = radarChart.getXAxis();
-        xAxis.setTextSize(9f);
-        xAxis.setYOffset(0f);
-        xAxis.setXOffset(0f);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(new String[]{
-                "Algoritmos", "Bases de Datos", "Sistemas", "Soft Skills", "POO", "Redes"
-        }));
-        xAxis.setTextColor(Color.parseColor("#374151"));
-
-        YAxis yAxis = radarChart.getYAxis();
-        yAxis.setAxisMinimum(0f);
-        yAxis.setAxisMaximum(100f);
-        yAxis.setLabelCount(5, false);
-        yAxis.setDrawLabels(false);
-
-        radarChart.invalidate();
-    }
-
     private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_dashboard);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
+        BottomNavigationView bnv = findViewById(R.id.bottom_navigation);
+        bnv.setSelectedItemId(R.id.nav_dashboard);
+        bnv.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_simulator) startActivity(new Intent(this, InterviewSimulatorActivity.class));
             else if (itemId == R.id.nav_cv) startActivity(new Intent(this, CvReviewerActivity.class));
             else if (itemId == R.id.nav_forum) startActivity(new Intent(this, ForumActivity.class));
             else if (itemId == R.id.nav_profile) startActivity(new Intent(this, UserProfileActivity.class));
-            else if (itemId == R.id.nav_dashboard) return true;
             overridePendingTransition(0, 0);
             return true;
         });

@@ -144,7 +144,20 @@ public class SupabaseManager {
     }
 
     /**
-     * Actualiza los datos del usuario en Supabase (metadata).
+     * Actualiza las habilidades del usuario en Supabase.
+     */
+    public static void getHabilidades(String userId, String token, okhttp3.Callback callback) {
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(SUPABASE_URL + "/rest/v1/habilidades?user_id=eq." + userId)
+                .addHeader("apikey", SUPABASE_KEY)
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+        client.newCall(request).enqueue(callback);
+    }
+
+    /**
+     * Actualiza los datos del usuario en Supabase.
      */
     public static void updateUser(String userId, String nombre, String apellido, String username, String celular, String carrera, String token, Callback callback) {
         try {
