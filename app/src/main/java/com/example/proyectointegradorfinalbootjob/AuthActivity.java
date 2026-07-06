@@ -102,10 +102,36 @@ public class AuthActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                         if (response.isSuccessful()) {
-                            runOnUiThread(() -> {
-                                Toast.makeText(AuthActivity.this, "¡Bienvenido de vuelta!", Toast.LENGTH_SHORT).show();
-                                navigateToDashboard();
-                            });
+                            try {
+                                String responseBody = response.body() != null ? response.body().string() : "";
+                                JSONObject jsonResponse = new JSONObject(responseBody);
+                                JSONObject userJson = jsonResponse.optJSONObject("user");
+
+                                if (userJson != null) {
+                                    String userId = userJson.optString("id", "");
+                                    JSONObject metadata = userJson.optJSONObject("user_metadata");
+
+                                    SharedPreferences.Editor editor = getSharedPreferences("UserPrefs", MODE_PRIVATE).edit();
+                                    editor.putString("userId", userId);
+                                    editor.putString("email", userJson.optString("email", email));
+
+                                    if (metadata != null) {
+                                        editor.putString("nombre", metadata.optString("nombre", ""));
+                                        editor.putString("apellido", metadata.optString("apellido", ""));
+                                        editor.putString("username", metadata.optString("username", ""));
+                                        editor.putString("celular", metadata.optString("celular", ""));
+                                        editor.putString("carrera", metadata.optString("carrera", ""));
+                                    }
+                                    editor.apply();
+                                }
+
+                                runOnUiThread(() -> {
+                                    Toast.makeText(AuthActivity.this, "¡Bienvenido de vuelta!", Toast.LENGTH_SHORT).show();
+                                    navigateToDashboard();
+                                });
+                            } catch (Exception e) {
+                                runOnUiThread(() -> resetUIWithError("Error procesando sesión: " + e.getMessage()));
+                            }
                         } else {
                             String errorBody = response.body() != null ? response.body().string() : "Error";
                             runOnUiThread(() -> resetUIWithError("Error login: " + errorBody));
