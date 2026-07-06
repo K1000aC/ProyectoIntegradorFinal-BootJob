@@ -1,10 +1,13 @@
 package com.example.proyectointegradorfinalbootjob;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.speech.RecognizerIntent;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,6 +26,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class InterviewSimulatorActivity extends AppCompatActivity {
 
@@ -72,15 +82,19 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
         tvFeedbackTitle = findViewById(R.id.tv_feedback_title);
         tvFeedbackMessage = findViewById(R.id.tv_feedback_message);
 
-        // Ajuste de UI: Centrado del botón
         btnSend.setGravity(Gravity.CENTER);
 
-        // Listeners
+        // Listeners Multimedia
         btnStart.setOnClickListener(v -> startInterview());
         btnSend.setOnClickListener(v -> simulateFeedback());
         btnNext.setOnClickListener(v -> loadNextQuestion());
-        btnVoice.setOnClickListener(v -> Toast.makeText(this, "Funcionalidad de voz", Toast.LENGTH_SHORT).show());
-        btnCamera.setOnClickListener(v -> startActivityForResult(new Intent(MediaStore.ACTION_VIDEO_CAPTURE), 101));
+
+        btnVoice.setOnClickListener(v -> {
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            startActivityForResult(intent, 101);
+        });
+        btnCamera.setOnClickListener(v -> startActivityForResult(new Intent(MediaStore.ACTION_VIDEO_CAPTURE), 102));
         btnIdea.setOnClickListener(v -> new AlertDialog.Builder(this).setTitle("Tip").setMessage("Usa el método STAR (Situación, Tarea, Acción, Resultado).").setPositiveButton("OK", null).show());
 
         setupSpinners();
@@ -109,6 +123,8 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
     private void navigateTo(int itemId) {
         if (itemId == R.id.nav_dashboard) startActivity(new Intent(this, DashboardActivity.class));
         else if (itemId == R.id.nav_profile) startActivity(new Intent(this, UserProfileActivity.class));
+        else if (itemId == R.id.nav_cv) startActivity(new Intent(this, CvReviewerActivity.class));
+        else if (itemId == R.id.nav_forum) startActivity(new Intent(this, ForumActivity.class));
         overridePendingTransition(0, 0);
     }
 
