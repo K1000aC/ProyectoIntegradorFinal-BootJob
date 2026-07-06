@@ -109,10 +109,12 @@ public class AuthActivity extends AppCompatActivity {
 
                                 if (userJson != null) {
                                     String userId = userJson.optString("id", "");
+                                    String accessToken = jsonResponse.optString("access_token", "");
                                     JSONObject metadata = userJson.optJSONObject("user_metadata");
 
                                     SharedPreferences.Editor editor = getSharedPreferences("UserPrefs", MODE_PRIVATE).edit();
                                     editor.putString("userId", userId);
+                                    editor.putString("token", accessToken);
                                     editor.putString("email", userJson.optString("email", email));
 
                                     if (metadata != null) {

@@ -145,7 +145,8 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
         totalScore += score;
 
         tvFeedbackTitle.setText("Puntuación: " + score + "/100");
-        tvFeedbackMessage.setText("Análisis completado. Pulsa siguiente para continuar.");
+        tvFeedbackMessage.setText(score >= 70 ? "Excelente respuesta técnica." : "Podrías profundizar más en los detalles.");
+        cardFeedback.setStrokeColor(score >= 70 ? android.graphics.Color.parseColor("#16A34A") : android.graphics.Color.parseColor("#EF4444"));
         cardFeedback.setVisibility(View.VISIBLE);
         btnNext.setVisibility(View.VISIBLE);
     }
@@ -169,11 +170,12 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
     private void guardarResultadoEnBaseDeDatos(int score) {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String userId = prefs.getString("userId", "");
+        String token = prefs.getString("token", SupabaseManager.SUPABASE_KEY);
         String empresa = spinnerCompany.getText().toString().trim();
         String puesto = spinnerRole.getText().toString().trim();
 
         if (!userId.isEmpty()) {
-            SupabaseManager.saveSimulation(userId, empresa, puesto, score, SupabaseManager.SUPABASE_KEY, new Callback() {
+            SupabaseManager.saveSimulation(userId, empresa, puesto, score, token, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     runOnUiThread(() -> Toast.makeText(InterviewSimulatorActivity.this, "Error al guardar", Toast.LENGTH_SHORT).show());

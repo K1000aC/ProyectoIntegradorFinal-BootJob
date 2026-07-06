@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp"
-            android:paddingTop="64dp">
+            android:paddingTop="48dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -173,6 +173,16 @@
                     android:layout_height="wrap_content"
                     android:enabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_edit_profile"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Editar Perfil"
+                app:icon="@drawable/ic_save"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="12dp"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_logout"

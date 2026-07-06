@@ -69,7 +69,10 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void loadUserStats(String userId) {
-        SupabaseManager.getStatistics(userId, SupabaseManager.SUPABASE_KEY, new Callback() {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = prefs.getString("token", SupabaseManager.SUPABASE_KEY);
+
+        SupabaseManager.getStatistics(userId, token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(() -> Toast.makeText(DashboardActivity.this, "Error de red", Toast.LENGTH_SHORT).show());
