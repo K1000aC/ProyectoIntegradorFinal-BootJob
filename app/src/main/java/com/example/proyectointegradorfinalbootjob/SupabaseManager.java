@@ -24,7 +24,6 @@ public class SupabaseManager {
             jsonBody.put("email", email);
             jsonBody.put("password", password);
 
-            // Supabase permite guardar datos extra del usuario en "data" (user_metadata)
             JSONObject userData = new JSONObject();
             userData.put("nombre", nombre);
             userData.put("apellido", apellido);
@@ -69,5 +68,18 @@ public class SupabaseManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Consulta las estadísticas de un usuario en Supabase.
+     */
+    public static void getStatistics(String userId, String token, Callback callback) {
+        Request request = new Request.Builder()
+                .url(SUPABASE_URL + "/rest/v1/estadisticas?user_id=eq." + userId)
+                .addHeader("apikey", SUPABASE_KEY)
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+        client.newCall(request).enqueue(callback);
     }
 }

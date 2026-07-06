@@ -15,8 +15,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.json.JSONObject;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -41,18 +43,17 @@ public class AuthActivity extends AppCompatActivity {
         LinearLayout layoutRegisterFields = findViewById(R.id.layout_register_fields);
         TextInputLayout layoutConfirmPassword = findViewById(R.id.layout_confirm_password);
         Button btnForgotPassword = findViewById(R.id.btn_forgot_password);
-
         btnSubmit = findViewById(R.id.btn_submit_auth);
         progressBar = findViewById(R.id.progress_bar_auth);
         AutoCompleteTextView spinnerCarrera = findViewById(R.id.spinner_carrera);
 
-        com.google.android.material.textfield.TextInputEditText edtNombre = findViewById(R.id.edt_nombre);
-        com.google.android.material.textfield.TextInputEditText edtApellido = findViewById(R.id.edt_apellido);
-        com.google.android.material.textfield.TextInputEditText edtUsername = findViewById(R.id.edt_username);
-        com.google.android.material.textfield.TextInputEditText edtCelular = findViewById(R.id.edt_celular);
-        com.google.android.material.textfield.TextInputEditText edtCorreo = findViewById(R.id.edt_correo);
-        com.google.android.material.textfield.TextInputEditText edtPassword = findViewById(R.id.edt_password);
-        com.google.android.material.textfield.TextInputEditText edtConfirmPassword = findViewById(R.id.edt_confirm_password);
+        TextInputEditText edtNombre = findViewById(R.id.edt_nombre);
+        TextInputEditText edtApellido = findViewById(R.id.edt_apellido);
+        TextInputEditText edtUsername = findViewById(R.id.edt_username);
+        TextInputEditText edtCelular = findViewById(R.id.edt_celular);
+        TextInputEditText edtCorreo = findViewById(R.id.edt_correo);
+        TextInputEditText edtPassword = findViewById(R.id.edt_password);
+        TextInputEditText edtConfirmPassword = findViewById(R.id.edt_confirm_password);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.careers_array, android.R.layout.simple_spinner_item);
@@ -83,37 +84,15 @@ public class AuthActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(v -> {
             clearAllTextInputLayoutErrors((ViewGroup) findViewById(android.R.id.content));
 
-            boolean hasError = false;
-            String email = edtCorreo.getText().toString().trim();
-            String password = edtPassword.getText().toString().trim();
+            String email = Objects.requireNonNull(edtCorreo.getText()).toString().trim();
+            String password = Objects.requireNonNull(edtPassword.getText()).toString().trim();
 
-            if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                setErrorOnEditText(edtCorreo, "Formato de correo no válido");
-                hasError = true;
-            }
-            if (password.length() < 6) {
-                setErrorOnEditText(edtPassword, "La contraseña debe tener al menos 6 caracteres");
-                hasError = true;
-            }
-
-            if (!isLogin) {
-                if (edtNombre.getText().toString().trim().isEmpty()) { setErrorOnEditText(edtNombre, "Requerido"); hasError = true; }
-                if (edtApellido.getText().toString().trim().isEmpty()) { setErrorOnEditText(edtApellido, "Requerido"); hasError = true; }
-                if (edtUsername.getText().toString().trim().isEmpty()) { setErrorOnEditText(edtUsername, "Requerido"); hasError = true; }
-                if (spinnerCarrera.getText().toString().trim().isEmpty()) { setErrorOnEditText(spinnerCarrera, "Requerido"); hasError = true; }
-                if (!password.equals(edtConfirmPassword.getText().toString().trim())) {
-                    setErrorOnEditText(edtConfirmPassword, "Las contraseñas no coinciden");
-                    hasError = true;
-                }
-            }
-
-            if (hasError) return;
+            if (!validateInputs(email, password, edtNombre, edtApellido, edtUsername, spinnerCarrera, edtConfirmPassword)) return;
 
             btnSubmit.setEnabled(false);
             progressBar.setVisibility(View.VISIBLE);
 
             if (isLogin) {
-                // PETICIÓN REAL DE INICIO DE SESIÓN
                 SupabaseManager.loginUser(email, password, new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -128,58 +107,77 @@ public class AuthActivity extends AppCompatActivity {
                                 navigateToDashboard();
                             });
                         } else {
-                            String errorBody = response.body() != null ? response.body().string() : "Error desconocido";
+                            String errorBody = response.body() != null ? response.body().string() : "Error";
                             runOnUiThread(() -> resetUIWithError("Error login: " + errorBody));
                         }
                     }
                 });
-            } else {
-                // PETICIÓN REAL DE REGISTRO
-                SupabaseManager.registerUser(
-                        email, password,
-                        edtNombre.getText().toString().trim(),
-                        edtApellido.getText().toString().trim(),
-                        edtUsername.getText().toString().trim(),
-                        edtCelular.getText().toString().trim(),
-                        spinnerCarrera.getText().toString().trim(),
-                        new Callback() {
-                            @Override
-                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                runOnUiThread(() -> resetUIWithError("Fallo de red: " + e.getMessage()));
-                            }
+            } else
+                SupabaseManager.registerUser(email, password, edtNombre.getText().toString().trim(), edtApellido.getText().toString().trim(), edtUsername.getText().toString().trim(), Objects.requireNonNull(edtCelular.getText()).toString().trim(), spinnerCarrera.getText().toString().trim(), new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        runOnUiThread(() -> resetUIWithError("Fallo de red: " + e.getMessage()));
+                    }
 
-                            @Override
-                            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                                if (response.isSuccessful()) {
-                                    // Guardar temporalmente los datos en el celular para el Perfil
-                                    SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = prefs.edit();
-                                    editor.putString("nombre", edtNombre.getText().toString().trim());
-                                    editor.putString("apellido", edtApellido.getText().toString().trim());
-                                    editor.putString("username", edtUsername.getText().toString().trim());
-                                    editor.putString("celular", edtCelular.getText().toString().trim());
-                                    editor.putString("carrera", spinnerCarrera.getText().toString().trim());
-                                    editor.putString("email", email);
-                                    editor.apply();
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            try {
+                                String responseBody = response.body() != null ? response.body().string() : "";
+                                JSONObject jsonResponse = new JSONObject(responseBody);
+                                String userId = jsonResponse.optString("id", "");
 
-                                    runOnUiThread(() -> {
-                                        Toast.makeText(AuthActivity.this, "Cuenta creada con éxito.", Toast.LENGTH_LONG).show();
-                                        navigateToDashboard();
-                                    });
-                                } else {
-                                    String errorBody = response.body() != null ? response.body().string() : "Error desconocido";
-                                    runOnUiThread(() -> resetUIWithError("Rechazado por Supabase: " + errorBody));
-                                }
+                                SharedPreferences.Editor editor = getSharedPreferences("UserPrefs", MODE_PRIVATE).edit();
+                                editor.putString("userId", userId);
+                                editor.putString("nombre", edtNombre.getText().toString().trim());
+                                editor.putString("apellido", edtApellido.getText().toString().trim());
+                                editor.putString("username", edtUsername.getText().toString().trim());
+                                editor.putString("celular", edtCelular.getText().toString().trim());
+                                editor.putString("carrera", spinnerCarrera.getText().toString().trim());
+                                editor.putString("email", email);
+                                editor.apply();
+
+                                runOnUiThread(() -> {
+                                    Toast.makeText(AuthActivity.this, "Cuenta creada con éxito.", Toast.LENGTH_LONG).show();
+                                    navigateToDashboard();
+                                });
+                            } catch (Exception e) {
+                                runOnUiThread(() -> resetUIWithError("Error procesando sesión."));
                             }
+                        } else {
+                            String errorBody = response.body() != null ? response.body().string() : "Error";
+                            runOnUiThread(() -> resetUIWithError("Rechazado por Supabase: " + errorBody));
                         }
-                );
-            }
+                    }
+                });
         });
+    }
+
+    private boolean validateInputs(String email, String password, EditText n, EditText a, EditText u, AutoCompleteTextView c, EditText cp) {
+        boolean hasError = false;
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            setErrorOnEditText(findViewById(R.id.edt_correo), "Correo no válido");
+            hasError = true;
+        }
+        if (password.length() < 6) {
+            setErrorOnEditText(findViewById(R.id.edt_password), "Mínimo 6 caracteres");
+            hasError = true;
+        }
+        if (!isLogin) {
+            if (n.getText().toString().trim().isEmpty()) { setErrorOnEditText(n, "Requerido"); hasError = true; }
+            if (a.getText().toString().trim().isEmpty()) { setErrorOnEditText(a, "Requerido"); hasError = true; }
+            if (u.getText().toString().trim().isEmpty()) { setErrorOnEditText(u, "Requerido"); hasError = true; }
+            if (c.getText().toString().trim().isEmpty()) { setErrorOnEditText(c, "Requerido"); hasError = true; }
+            if (!password.equals(cp.getText().toString().trim())) {
+                setErrorOnEditText(cp, "No coinciden");
+                hasError = true;
+            }
+        }
+        return !hasError;
     }
 
     private void navigateToDashboard() {
         progressBar.setVisibility(View.GONE);
-        btnSubmit.setEnabled(true);
         startActivity(new Intent(AuthActivity.this, DashboardActivity.class));
         finishAffinity();
     }
@@ -190,44 +188,31 @@ public class AuthActivity extends AppCompatActivity {
         Toast.makeText(AuthActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
-    private void updateUI(LinearLayout regFields, TextInputLayout confirmPass, Button forgotPass, Button submitBtn) {
+    private void updateUI(LinearLayout reg, TextInputLayout cp, Button fp, Button sub) {
         if (isLogin) {
-            regFields.setVisibility(View.GONE);
-            confirmPass.setVisibility(View.GONE);
-            forgotPass.setVisibility(View.VISIBLE);
-            submitBtn.setText(R.string.btn_login_submit);
+            reg.setVisibility(View.GONE);
+            cp.setVisibility(View.GONE);
+            fp.setVisibility(View.VISIBLE);
+            sub.setText(R.string.btn_login_submit);
         } else {
-            regFields.setVisibility(View.VISIBLE);
-            confirmPass.setVisibility(View.VISIBLE);
-            forgotPass.setVisibility(View.GONE);
-            submitBtn.setText(R.string.btn_register_submit);
+            reg.setVisibility(View.VISIBLE);
+            cp.setVisibility(View.VISIBLE);
+            fp.setVisibility(View.GONE);
+            sub.setText(R.string.btn_register_submit);
         }
     }
 
-    private void setErrorOnEditText(EditText editText, String error) {
-        if (editText == null) return;
-        android.view.ViewParent parent = editText.getParent();
-        while (parent != null) {
-            if (parent instanceof TextInputLayout) {
-                ((TextInputLayout) parent).setError(error);
-                ((TextInputLayout) parent).setErrorEnabled(true);
-                return;
-            }
-            parent = parent.getParent();
+    private void setErrorOnEditText(EditText et, String error) {
+        if (et != null && et.getParent() instanceof TextInputLayout) {
+            ((TextInputLayout) et.getParent()).setError(error);
         }
-        editText.setError(error);
     }
 
-    private void clearAllTextInputLayoutErrors(ViewGroup viewGroup) {
-        if (viewGroup == null) return;
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
-            if (child instanceof TextInputLayout) {
-                ((TextInputLayout) child).setError(null);
-                ((TextInputLayout) child).setErrorEnabled(false);
-            } else if (child instanceof ViewGroup) {
-                clearAllTextInputLayoutErrors((ViewGroup) child);
-            }
+    private void clearAllTextInputLayoutErrors(ViewGroup vg) {
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            View child = vg.getChildAt(i);
+            if (child instanceof TextInputLayout) ((TextInputLayout) child).setError(null);
+            else if (child instanceof ViewGroup) clearAllTextInputLayoutErrors((ViewGroup) child);
         }
     }
 }
