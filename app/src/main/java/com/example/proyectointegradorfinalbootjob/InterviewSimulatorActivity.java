@@ -205,8 +205,17 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.nav_simulator);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.nav_dashboard) startActivity(new Intent(this, DashboardActivity.class));
-            else if (itemId == R.id.nav_profile) startActivity(new Intent(this, UserProfileActivity.class));
+            if (itemId == R.id.nav_dashboard) {
+                startActivity(new Intent(this, DashboardActivity.class));
+            } else if (itemId == R.id.nav_cv) {
+                startActivity(new Intent(this, CvReviewerActivity.class));
+            } else if (itemId == R.id.nav_forum) {
+                startActivity(new Intent(this, ForumActivity.class));
+            } else if (itemId == R.id.nav_profile) {
+                startActivity(new Intent(this, UserProfileActivity.class));
+            } else if (itemId == R.id.nav_simulator) {
+                return true;
+            }
             overridePendingTransition(0, 0);
             return true;
         });
