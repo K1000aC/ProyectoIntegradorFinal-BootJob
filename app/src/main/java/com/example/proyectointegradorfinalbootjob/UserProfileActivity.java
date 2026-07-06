@@ -120,7 +120,7 @@ public class UserProfileActivity extends AppCompatActivity {
         String token = prefs.getString("token", "");
         String username = prefs.getString("username", "");
 
-        SupabaseManagerpt3.updateUser(userId, nombre, apellido, username, phone, carrera, token, new Callback() {
+        SupabaseManager.updateUser(userId, nombre, apellido, username, phone, carrera, token, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 runOnUiThread(() -> Toast.makeText(UserProfileActivity.this, "Error de red", Toast.LENGTH_SHORT).show());

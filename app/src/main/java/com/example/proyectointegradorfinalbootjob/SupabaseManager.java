@@ -142,4 +142,34 @@ public class SupabaseManager {
                 .build();
         client.newCall(request).enqueue(callback);
     }
+
+    /**
+     * Actualiza los datos del usuario en Supabase (metadata).
+     */
+    public static void updateUser(String userId, String nombre, String apellido, String username, String celular, String carrera, String token, Callback callback) {
+        try {
+            JSONObject jsonBody = new JSONObject();
+            JSONObject userData = new JSONObject();
+            userData.put("nombre", nombre);
+            userData.put("apellido", apellido);
+            userData.put("username", username);
+            userData.put("celular", celular);
+            userData.put("carrera", carrera);
+
+            jsonBody.put("data", userData);
+
+            RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
+            Request request = new Request.Builder()
+                    .url(SUPABASE_URL + "/auth/v1/user")
+                    .addHeader("apikey", SUPABASE_KEY)
+                    .addHeader("Authorization", "Bearer " + token)
+                    .addHeader("Content-Type", "application/json")
+                    .put(body)
+                    .build();
+
+            client.newCall(request).enqueue(callback);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
