@@ -82,4 +82,24 @@ public class SupabaseManager {
                 .build();
         client.newCall(request).enqueue(callback);
     }
+
+    public static void saveSimulation(String userId, String empresa, String puesto, int score, String token, Callback callback) {
+        try {
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("user_id", userId);
+            jsonBody.put("empresa", empresa);
+            jsonBody.put("puesto", puesto);
+            jsonBody.put("score", score);
+
+            RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json; charset=utf-8"));
+            Request request = new Request.Builder()
+                    .url(SUPABASE_URL + "/rest/v1/simulaciones")
+                    .addHeader("apikey", SUPABASE_KEY)
+                    .addHeader("Authorization", "Bearer " + token)
+                    .addHeader("Prefer", "return=representation")
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(callback);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
 }
