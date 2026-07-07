@@ -52,13 +52,7 @@ public class UserProfileActivity extends AppCompatActivity {
         tvNombre = findViewById(R.id.tv_profile_name);
         tvUsername = findViewById(R.id.tv_profile_username);
         tvInitials = findViewById(R.id.tv_profile_initials);
-        btnLogout.setOnClickListener(v -> {
-            prefs.edit().clear().apply();
-            Intent intent = new Intent(UserProfileActivity.this, LandingActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-        });
+        btnLogout = findViewById(R.id.btn_logout);
         btnEditProfile = findViewById(R.id.btn_edit_profile);
 
         prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
@@ -129,27 +123,42 @@ public class UserProfileActivity extends AppCompatActivity {
         SupabaseManager.updateUser(userId, nombre, apellido, username, phone, carrera, token, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(() -> Toast.makeText(UserProfileActivity.this, "Error de red", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> {
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("nombre", nombre);
+                    editor.putString("apellido", apellido);
+                    editor.putString("celular", phone);
+                    editor.putString("carrera", carrera);
+                    editor.apply();
+
+                    isEditing = false;
+                    btnEditProfile.setText("Editar Perfil");
+                    setFieldsEnabled(false);
+                    loadUserData();
+                    Toast.makeText(UserProfileActivity.this, "Perfil actualizado localmente (Sin conexión)", Toast.LENGTH_SHORT).show();
+                });
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 runOnUiThread(() -> {
-                    if (response.isSuccessful()) {
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString("nombre", nombre);
-                        editor.putString("apellido", apellido);
-                        editor.putString("celular", phone);
-                        editor.putString("carrera", carrera);
-                        editor.apply();
+                    // Siempre persistir localmente sin importar el resultado de la sincronización en la nube
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("nombre", nombre);
+                    editor.putString("apellido", apellido);
+                    editor.putString("celular", phone);
+                    editor.putString("carrera", carrera);
+                    editor.apply();
 
-                        isEditing = false;
-                        btnEditProfile.setText("Editar Perfil");
-                        setFieldsEnabled(false);
-                        loadUserData();
-                        Toast.makeText(UserProfileActivity.this, "Perfil actualizado", Toast.LENGTH_SHORT).show();
+                    isEditing = false;
+                    btnEditProfile.setText("Editar Perfil");
+                    setFieldsEnabled(false);
+                    loadUserData();
+
+                    if (response.isSuccessful()) {
+                        Toast.makeText(UserProfileActivity.this, "Perfil actualizado en la nube", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(UserProfileActivity.this, "Error al actualizar", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UserProfileActivity.this, "Perfil actualizado localmente", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

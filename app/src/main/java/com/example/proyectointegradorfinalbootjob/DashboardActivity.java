@@ -74,7 +74,7 @@ public class DashboardActivity extends AppCompatActivity {
             loadUserStats(userId, token);
             fetchHabilidades(userId, token);
         } else {
-            showEmptyState();
+            loadLocalStats();
         }
         setupBottomNavigation();
     }
@@ -82,7 +82,7 @@ public class DashboardActivity extends AppCompatActivity {
     private void loadUserStats(String userId, String token) {
         progressBar.setVisibility(View.VISIBLE);
         SupabaseManager.getStatistics(userId, token, new Callback() {
-            @Override public void onFailure(Call call, IOException e) { runOnUiThread(() -> { progressBar.setVisibility(View.GONE); showEmptyState(); }); }
+            @Override public void onFailure(Call call, IOException e) { runOnUiThread(() -> { progressBar.setVisibility(View.GONE); loadLocalStats(); }); }
             @Override public void onResponse(Call call, Response response) throws IOException {
                 String body = response.body() != null ? response.body().string() : "[]";
                 runOnUiThread(() -> {
@@ -91,13 +91,51 @@ public class DashboardActivity extends AppCompatActivity {
                         JSONArray jsonArray = new JSONArray(body);
                         if (jsonArray.length() > 0) {
                             layoutContent.setVisibility(View.VISIBLE);
+                            layoutEmptyState.setVisibility(View.GONE);
                             updateStats(jsonArray);
                             setupLineChart(jsonArray);
-                        } else { showEmptyState(); }
-                    } catch (Exception e) { showEmptyState(); }
+                        } else { loadLocalStats(); }
+                    } catch (Exception e) { loadLocalStats(); }
                 });
             }
         });
+    }
+
+    private void loadLocalStats() {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int simCount = prefs.getInt("sim_count_local", 0);
+        String simScoresStr = prefs.getString("sim_scores_local", "");
+
+        if (simCount > 0 && !simScoresStr.isEmpty()) {
+            layoutContent.setVisibility(View.VISIBLE);
+            layoutEmptyState.setVisibility(View.GONE);
+
+            String[] scores = simScoresStr.split(",");
+            int totalScore = 0;
+            int bestScore = 0;
+            List<Entry> lineEntries = new ArrayList<>();
+
+            for (int i = 0; i < scores.length; i++) {
+                int score = Integer.parseInt(scores[i]);
+                totalScore += score;
+                if (score > bestScore) bestScore = score;
+                lineEntries.add(new Entry(i, (float) score));
+            }
+
+            tvSimulations.setText(String.valueOf(simCount));
+            tvAvgScore.setText(String.valueOf(totalScore / simCount));
+            tvBestScore.setText(String.valueOf(bestScore));
+            tvTotalTime.setText((simCount * 5) + "m");
+
+            LineDataSet lineDataSet = new LineDataSet(lineEntries, "Score");
+            lineDataSet.setColor(Color.parseColor("#16A34A"));
+            lineDataSet.setCircleColor(Color.parseColor("#16A34A"));
+            lineDataSet.setLineWidth(3f);
+            lineChart.setData(new LineData(lineDataSet));
+            lineChart.invalidate();
+        } else {
+            showEmptyState();
+        }
     }
 
     private void fetchHabilidades(String userId, String token) {

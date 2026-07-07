@@ -133,9 +133,17 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
         String[] roles = {"Software Engineer", "Desarrollador Backend", "Data Engineer"};
         spinnerCompany.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, companies));
         spinnerRole.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, roles));
+        btnStart.setEnabled(true); // Siempre habilitado por defecto para evitar bloqueos
     }
 
     private void startInterview() {
+        String company = spinnerCompany.getText().toString().trim();
+        String role = spinnerRole.getText().toString().trim();
+        if (company.isEmpty() || role.isEmpty()) {
+            Toast.makeText(this, "Por favor selecciona empresa y puesto", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         phaseSetup.setVisibility(View.GONE);
         phaseInterview.setVisibility(View.VISIBLE);
         currentQuestionIndex = 0;
@@ -172,7 +180,39 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
             loadQuestionData();
             startTimer();
         } else {
-            finish();
+            int averageScore = totalScore / questions.length;
+
+            SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            String userId = prefs.getString("userId", "");
+            String token = prefs.getString("token", "");
+            String company = spinnerCompany.getText().toString().trim();
+            String role = spinnerRole.getText().toString().trim();
+
+            // Guardar progreso localmente
+            int localCount = prefs.getInt("sim_count_local", 0) + 1;
+            String simScores = prefs.getString("sim_scores_local", "");
+            if (simScores.isEmpty()) {
+                simScores = String.valueOf(averageScore);
+            } else {
+                simScores += "," + averageScore;
+            }
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("sim_count_local", localCount);
+            editor.putString("sim_scores_local", simScores);
+            editor.apply();
+
+            // Intentar guardar en Supabase en segundo plano
+            SupabaseManager.saveSimulation(userId, company, role, averageScore, token, new Callback() {
+                @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {}
+                @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {}
+            });
+
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle("¡Simulación Finalizada!")
+                    .setMessage("Tu puntuación promedio: " + averageScore + "/100.\nProgreso guardado exitosamente.")
+                    .setCancelable(false)
+                    .setPositiveButton("Terminar", (d, w) -> finish())
+                    .show();
         }
     }
 
