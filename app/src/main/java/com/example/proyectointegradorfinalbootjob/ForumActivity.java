@@ -98,6 +98,7 @@ public class ForumActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (response.isSuccessful()) {
                         Toast.makeText(ForumActivity.this, "¡Publicado en la nube!", Toast.LENGTH_SHORT).show();
+                        loadForumData(); // Recargar para sincronizar IDs reales
                     } else {
                         Toast.makeText(ForumActivity.this, "Guardado localmente (Error Supabase)", Toast.LENGTH_SHORT).show();
                     }
@@ -126,43 +127,62 @@ public class ForumActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     try {
                         JSONArray array = new JSONArray(body);
-                        // Mezclar posts de Supabase sin duplicar los locales
+                        // Mezclar posts de Supabase sin duplicar
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             int id = obj.optInt("id");
 
+                            // Evitar duplicados basados en ID o contenido muy similar si el ID local es distinto
                             boolean exists = false;
-                            for (Post p : postList) {
-                                if (p.id == id) {
+                            for (int j = 0; j < postList.size(); j++) {
+                                Post p = postList.get(j);
+                                if (p.id == id || (p.title.equals(obj.optString("title")) && p.author.equals(obj.optString("author")))) {
+                                    // Si existe localmente con ID temporal, actualizarlo con el real de la DB
+                                    postList.set(j, parsePostFromJson(obj));
                                     exists = true;
                                     break;
                                 }
                             }
 
                             if (!exists) {
-                                String authName = obj.optString("author");
-                                String initials = "AB";
-                                if (authName.length() > 1) {
-                                    String[] parts = authName.split(" ");
-                                    if (parts.length > 1) {
-                                        initials = parts[0].substring(0, 1).toUpperCase() + parts[1].substring(0, 1).toUpperCase();
-                                    } else {
-                                        initials = authName.substring(0, Math.min(2, authName.length())).toUpperCase();
-                                    }
-                                }
-                                postList.add(new Post(id, authName, initials, "Estudiante",
-                                        obj.optString("company"), obj.optString("role"), "Reciente",
-                                        obj.optString("title"), obj.optString("content"), 0, 0));
+                                postList.add(0, parsePostFromJson(obj));
                             }
                         }
+                        saveLocalPosts(); // Persistir la mezcla
                         filterPosts();
                     } catch (Exception e) {
+                        e.printStackTrace();
                         if (postList.isEmpty()) showDefaultPosts();
                         else filterPosts();
                     }
                 });
             }
         });
+    }
+
+    private Post parsePostFromJson(JSONObject obj) {
+        String authName = obj.optString("author", "Usuario");
+        String initials = "US";
+        if (authName.length() > 0) {
+            String[] parts = authName.split(" ");
+            if (parts.length > 1) {
+                initials = (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
+            } else {
+                initials = authName.substring(0, Math.min(2, authName.length())).toUpperCase();
+            }
+        }
+        return new Post(
+                obj.optInt("id"),
+                authName,
+                initials,
+                "Estudiante",
+                obj.optString("company", "N/A"),
+                obj.optString("role", "N/A"),
+                "Reciente",
+                obj.optString("title", ""),
+                obj.optString("content", ""),
+                0, 0
+        );
     }
 
     private void showDefaultPosts() {

@@ -118,15 +118,18 @@ public class SupabaseManager {
             jsonBody.put("content", content);
 
             RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
-            Request request = new Request.Builder()
+            Request.Builder builder = new Request.Builder()
                     .url(SUPABASE_URL + "/rest/v1/foro")
                     .addHeader("apikey", SUPABASE_KEY)
-                    .addHeader("Authorization", "Bearer " + token)
                     .addHeader("Content-Type", "application/json")
                     .addHeader("Prefer", "return=representation")
-                    .post(body)
-                    .build();
-            client.newCall(request).enqueue(callback);
+                    .post(body);
+
+            // Si el token es nulo o vacío, intentamos usar la apikey como bearer (para tablas públicas)
+            String authHeader = (token != null && !token.isEmpty()) ? token : SUPABASE_KEY;
+            builder.addHeader("Authorization", "Bearer " + authHeader);
+
+            client.newCall(builder.build()).enqueue(callback);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -134,13 +137,15 @@ public class SupabaseManager {
      * Obtiene las experiencias del foro.
      */
     public static void getForumPosts(String token, Callback callback) {
-        Request request = new Request.Builder()
+        Request.Builder builder = new Request.Builder()
                 .url(SUPABASE_URL + "/rest/v1/foro?select=*&order=created_at.desc")
                 .addHeader("apikey", SUPABASE_KEY)
-                .addHeader("Authorization", "Bearer " + token)
-                .get()
-                .build();
-        client.newCall(request).enqueue(callback);
+                .get();
+
+        String authHeader = (token != null && !token.isEmpty()) ? token : SUPABASE_KEY;
+        builder.addHeader("Authorization", "Bearer " + authHeader);
+
+        client.newCall(builder.build()).enqueue(callback);
     }
 
     /**

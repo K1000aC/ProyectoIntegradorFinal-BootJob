@@ -153,6 +153,9 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
     }
 
     private void loadQuestionData() {
+        // Reset background to base green when starting a new question
+        layoutPhaseInterview.setBackgroundColor(android.graphics.Color.parseColor("#15803D"));
+        
         tvAiCategory.setText("ENTREVISTADOR · " + categories[currentQuestionIndex].toUpperCase());
         tvAiQuestion.setText(questions[currentQuestionIndex]);
         tvCounter.setText((currentQuestionIndex + 1) + "/" + questions.length);
@@ -164,11 +167,45 @@ public class InterviewSimulatorActivity extends AppCompatActivity {
 
     private void simulateFeedback() {
         String answer = etUserAnswer.getText().toString().trim();
-        if(answer.isEmpty()) { Toast.makeText(this, "Escribe algo", Toast.LENGTH_SHORT).show(); return; }
+        if(answer.isEmpty()) { Toast.makeText(this, "Escribe una respuesta para continuar", Toast.LENGTH_SHORT).show(); return; }
         stopTimer();
         btnSend.setVisibility(View.GONE);
-        int score = (answer.length() < 15) ? 45 : 80;
+
+        // Lógica de puntuación simulada basada en longitud y palabras clave
+        int score;
+        if (answer.length() < 20) {
+            score = 30 + (int)(Math.random() * 20); // Pobre
+        } else if (answer.length() < 60) {
+            score = 60 + (int)(Math.random() * 20); // Regular
+        } else {
+            score = 85 + (int)(Math.random() * 15); // Excelente
+        }
+        if (score > 100) score = 100;
+        
         totalScore += score;
+
+        // Semáforo de fondo dinámico con animación suave
+        int colorFrom = android.graphics.Color.parseColor("#15803D"); // Color base (Verde oscuro)
+        int colorTo;
+        
+        if (score >= 85) {
+            colorTo = android.graphics.Color.parseColor("#16A34A"); // Verde éxito
+            tvFeedbackMessage.setText("¡Excelente respuesta! Demuestras gran dominio técnico.");
+        } else if (score >= 65) {
+            colorTo = android.graphics.Color.parseColor("#EAB308"); // Amarillo advertencia
+            tvFeedbackMessage.setText("Buena respuesta, pero podrías profundizar un poco más en los detalles.");
+        } else {
+            colorTo = android.graphics.Color.parseColor("#B91C1C"); // Rojo crítico
+            tvFeedbackMessage.setText("Respuesta muy breve. Intenta explicar mejor tus procesos o razonamiento.");
+        }
+
+        // Animación Argb para transición fluida
+        android.animation.ValueAnimator colorAnimation = android.animation.ValueAnimator.ofObject(
+                new android.animation.ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(600);
+        colorAnimation.addUpdateListener(animator -> layoutPhaseInterview.setBackgroundColor((int) animator.getAnimatedValue()));
+        colorAnimation.start();
+
         tvFeedbackTitle.setText("Puntuación: " + score + "/100");
         cardFeedback.setVisibility(View.VISIBLE);
         btnNext.setVisibility(View.VISIBLE);

@@ -153,10 +153,21 @@ public class AuthActivity extends AppCompatActivity {
                             try {
                                 String responseBody = response.body() != null ? response.body().string() : "";
                                 JSONObject jsonResponse = new JSONObject(responseBody);
+                                
+                                // Intentar obtener el ID y el Token (si auto-confirm está activado)
                                 String userId = jsonResponse.optString("id", "");
+                                String accessToken = jsonResponse.optString("access_token", "");
+                                
+                                if (userId.isEmpty() && jsonResponse.has("user")) {
+                                    userId = jsonResponse.getJSONObject("user").optString("id", "");
+                                }
+                                if (accessToken.isEmpty() && jsonResponse.has("session")) {
+                                    accessToken = jsonResponse.getJSONObject("session").optString("access_token", "");
+                                }
 
                                 SharedPreferences.Editor editor = getSharedPreferences("UserPrefs", MODE_PRIVATE).edit();
                                 editor.putString("userId", userId);
+                                editor.putString("token", accessToken);
                                 editor.putString("nombre", edtNombre.getText().toString().trim());
                                 editor.putString("apellido", edtApellido.getText().toString().trim());
                                 editor.putString("username", edtUsername.getText().toString().trim());
